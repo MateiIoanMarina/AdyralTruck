@@ -1,0 +1,98 @@
+﻿@using AdyralTruck.Model.Furnizor;
+@{
+    ViewData["Title"] = "Adyral Truck";
+    var furnizori = ViewData["Furnizori"] as List<FurnizorViewModel>;
+}
+
+<style>
+    .row-click {
+        cursor: pointer;
+    }
+</style>
+
+<div class="row text-center">
+    <div class="col-sm">
+        <h1>Furnizori</h1>
+        <button class="btn btn-primary btn-sm float-end" onclick="adaugaFurnizor()">Adauga Furnizor</button>
+    </div>
+    
+</div>
+
+<hr style="margin-bottom: 50px;" />
+
+<div class="furnizori">
+    <table class="table">
+        <thead>
+            <tr style="font-weight: bold;">
+                <th scope="col">Nume</th>
+                <th scope="col">CIF</th>
+                <th scope="col">Nr. Reg. Comert</th>
+                <th scope="col">Banca</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Persoana Contact</th>
+                <th scope="col">Nr. Tel</th>
+                <th scope="col">Adresa</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (furnizori != null && furnizori.Any())
+            {
+                foreach (var furnizor in furnizori)
+                {
+                    <tr class="row-click">
+                        <th onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')" scope="row">@furnizor.Nume</th>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.CIF</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NrRegistruComert</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumeBanca</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.Email</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.PersoanaContact</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumarTelefon</td>
+                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.AdresaCorespondenta</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm btn-danger" onclick="stergeFurnizor(this, '@furnizor.FurnizorId.ToString()')">Sterge @furnizor.Nume</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="text-center">
+                    <td colspan="9"><strong>Nici un furnizor existent. Adaugati primul furnizor.</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            console.log("mm");
+        });
+
+        function stergeFurnizor(e, furnizorId) {
+            if (furnizorId) {
+                if(confirm("Sunteti sigur(a) ca vreti sa stergeti acest furnizor ?")){
+                    var link = '@Url.Action("StergeFurnizor", "Home", new { furnizorId = "-1" })';
+                    link = link.replace("-1", furnizorId);
+                    window.location.href = link;
+                }
+            }
+        }
+
+        function navigateToFurnizorDetailsPage(furnizorId) {
+            var link = '@Url.Action("DetaliiFurnizor", "Home", new { furnizorId = "-1", isUpdate= "false" })';
+            link = link.replace("-1", furnizorId);
+            window.location.href = link;
+        }
+
+        function adaugaFurnizor() {
+            var link = '@Url.Action("AdaugaFurnizor", "Home")';
+            window.location.href = link;
+        }
+    </script>
+}
+
+
