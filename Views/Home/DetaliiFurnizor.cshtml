@@ -23,6 +23,14 @@
     label {
         font-weight: bold;
     }
+
+    .stickyCell {
+        content: "\00a0";
+        display: block;
+        background: #fff;
+        z-index: -1;
+        top: 0;
+    }
 </style>
 
 @if (showSuccessUpdateMessage)
@@ -41,129 +49,181 @@
     </div>
 }
 
-<h1 class="text-center" style="margin-bottom: 50px;">@ViewData["Title"] - @furnizor?.Nume</h1>
-
 @using (Html.BeginForm("EditeazaFurnizor", "Home", FormMethod.Post))
 {
-    <div class="formular-furnizor">
-        <div class="row">
-            <div class="col-sm">
 
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Nume, "Nume *")
-                    @Html.TextBoxFor(m => m.Nume, htmlAttributes: new { @style = "width: 100%;" })
-                    @Html.ValidationMessageFor(m => m.Nume, "", new { @class = "errormsg" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.NrRegistruComert, "Mr. Reg. Comert *")
-                    @Html.TextBoxFor(m => m.NrRegistruComert, htmlAttributes: new { @style = "width: 100%;" })
-                    @Html.ValidationMessageFor(m => m.NrRegistruComert, "", new { @class = "errormsg" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, "Email *")
-                    @Html.TextBoxFor(m => m.Email, "", new { style = "width: 100%;", type = "email" })
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "errormsg" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.PersoanaContact, "Persoana Contact")
-                    @Html.TextBoxFor(m => m.PersoanaContact, htmlAttributes: new { @style = "width: 100%;" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.AdresaCorespondenta, "Adresa *")
-                    @Html.TextAreaFor(m => m.AdresaCorespondenta, htmlAttributes: new { @style = "width: 100%;", rows = 3 })
-                    @Html.ValidationMessageFor(m => m.AdresaCorespondenta, "", new { @class = "errormsg" })
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detalii Furnizor - @furnizor?.Nume</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Pentru a edita detaliile furnizorului, toate casutele marcate cu <strong>*</strong> trebuie sa fie completate.</h6>
+            <p class="card-text">
+                <div class="formular-furnizor">
+                    <div class="row">
+                        <div class="col-sm">
 
-            <div class="col-sm">
-                <div class="form-group">
-                    @Html.LabelFor(m => m.CIF, "CIF *")
-                    @Html.TextBoxFor(m => m.CIF, htmlAttributes: new { @style = "width: 100%;" })
-                    @Html.ValidationMessageFor(m => m.CIF, "", new { @class = "errormsg" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.NumeBanca, "Banca *")
-                    @Html.TextBoxFor(m => m.NumeBanca, htmlAttributes: new { @style = "width: 100%;" })
-                    @Html.ValidationMessageFor(m => m.NumeBanca, "", new { @class = "errormsg" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.NumarTelefon, "Nr. Telefon")
-                    @Html.TextBoxFor(m => m.NumarTelefon, htmlAttributes: new { @style = "width: 100%;" })
-                </div>
-            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Nume, "Nume *")
+                                @Html.TextBoxFor(m => m.Nume, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.Nume, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.NrRegistruComert, "Nr. Reg. Comert *")
+                                @Html.TextBoxFor(m => m.NrRegistruComert, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.NrRegistruComert, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Email, "Email *")
+                                @Html.TextBoxFor(m => m.Email, "", new { style = "width: 100%;", type = "email", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.PersoanaContact, "Persoana Contact")
+                                @Html.TextBoxFor(m => m.PersoanaContact, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.AdresaCorespondenta, "Adresa *")
+                                @Html.TextAreaFor(m => m.AdresaCorespondenta, htmlAttributes: new { @style = "width: 100%;", rows = 3, @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.AdresaCorespondenta, "", new { @class = "errormsg" })
+                            </div>
+                        </div>
 
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-primary btn-success center-block" value="Salveaza" />
-            </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.CIF, "CIF *")
+                                @Html.TextBoxFor(m => m.CIF, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.CIF, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.NumeBanca, "Banca *")
+                                @Html.TextBoxFor(m => m.NumeBanca, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.NumeBanca, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ContBancar, "Cont Bancar *")
+                                @Html.TextBoxFor(m => m.ContBancar, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.ContBancar, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.NumarTelefon, "Nr. Telefon")
+                                @Html.TextBoxFor(m => m.NumarTelefon, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm"></div>
+                        <div class="col-sm float-start">
+                            <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-sm btn-success center-block" value="Salveaza" />
+                        </div>
+                    </div>
+                </div>
+            </p>
         </div>
     </div>
 
     @Html.HiddenFor(m => m.FurnizorId)
+    @Html.HiddenFor(m => m.ContracteTransport)
 }
 
-<hr style="margin-bottom: 20px;" />
+<br />
 
-<div class="row">
-    <table class="table">
-        <thead>
-            <tr style="font-weight: bold;">
-                <th scope="col">Furnizor</th>
-                <th scope="col">Nr. Contract</th>
-                <th scope="col">Data Contract</th>
-                <th scope="col">Nr. Comanda</th>
-                <th scope="col">Data Comanda</th>
-                <th scope="col">Nr. camioane</th>
-                <th scope="col">Produs Transportat</th>
-                <th scope="col">Ruta</th>
-                <th scope="col">Tarif (RON)</th>
-                <th scope="col">Data Incarcare</th>
-                <th scope="col">Tip Cantitate</th>
-                <th scope="col">Detalii Sofer</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (contracteDeTransport != null && contracteDeTransport.Any())
-            {
-                foreach (var contractTransport in contracteDeTransport)
-                {
-                    <tr class="row-click">
-                        <th onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')" scope="row">@contractTransport.Furnizor.Nume</th>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.NumarContract</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.DataContract.ToString("dd/MMM/yyyy")</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.NumarComanda</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.DataComanda.ToString("dd/MMM/yyyy")</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.NumarCamioane</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.ProdusTransportat</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.Ruta</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.Tarif</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.DataIncarcare.ToString("dd/MMM/yyyy")</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.TipCantitate</td>
-                        <td onclick="navigateToContractTransportDetailsPage('@contractTransport.ContractTransportId.ToString()')">@contractTransport.DetaliiSofer</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm btn-danger" onclick="stergeContractTransport(this, '@contractTransport.ContractTransportId.ToString()')">Sterge</button>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr class="text-center">
-                    <td colspan="9"><strong>Acest furnizor nu are nici un contract de transport efectuat in trecut.</strong></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">
+            Contracte de Transport
+            <button class="btn btn-primary btn-sm float-end" onclick="adaugaContractTransport('@furnizor?.FurnizorId.ToString()')">Adauga Contract de Transport</button>
+        </h5>
+        <br />
+        <p class="card-text">
+            <div class="row" style="overflow-x: auto;">
+                <table class="table table-responsive" style="overflow-x: auto; white-space: nowrap;">
+                    <thead>
+                        <tr style="font-weight: bold;">
+                            <th scope="col">Furnizor</th>
+                            <th scope="col">Nr. Contract</th>
+                            <th scope="col">Data Contract</th>
+                            <th scope="col">Data Expirare</th>
+                            <th scope="col">Activ</th>
+                            <th scope="col" class="stickyCell" style="position: sticky;right:90px;border-bottom-width: 0px;"></th>
+                            <th scope="col" class="stickyCell" style="position: sticky;right:0;border-bottom-width: 0px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (contracteDeTransport != null && contracteDeTransport.Any())
+                        {
+                            foreach (var contractTransport in contracteDeTransport)
+                            {
+                                <tr class="row-click">
+                                    <th style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" scope="row" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @contractTransport.Furnizor?.Nume
+                                    </th>
+                                    <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @contractTransport.NumarContract
+                                    </td>
+                                    <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @contractTransport.DataContract.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @(contractTransport.DataExpirare.HasValue ? contractTransport.DataExpirare.Value.ToString("dd/MM/yyyy") : string.Empty)
+                                    </td>
+                                    <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @(contractTransport.Inactiv ? "Nu" : "Da")
+                                    </td>
+                                    <td style="position: sticky;right:90px;background-color: white !important;">
+                                        <a class="btn btn-sm btn-primary" href="/Home/ContractTransportPdfReportDownload?contractTransportId=@contractTransport.ContractTransportId.ToString()">
+                                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                                            PDF
+                                        </a>
+                                    </td>
+                                    <td style="position: sticky;right:0px;background-color: white !important;">
+                                        <button class="btn btn-sm btn-danger" role="button" onclick="stergeContractTransport('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Sterge
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="text-center">
+                                <td colspan="9"><strong>Acest furnizor nu are nici un contract de transport.</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </p>
+    </div>
 </div>
-
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            
+
         });
 
+        function navigateToContractTransportDetailsPage(furnizorId, contractTransportId) {
+            var link = `/Home/DetaliiContractTransport?furnizorId=-2&contractTransportId=-1`;
+            link = link.replace("-1", contractTransportId);
+            link = link.replace("-2", furnizorId);
+            window.location.href = link;
+        }
+
+        function stergeContractTransport(furnizorId, contractTransportId) {
+            if (furnizorId) {
+                if (confirm("Doriti sa stergeti acest contract de transport ?")) {
+                    var link = `/Home/StergeContractTransport?furnizorId=${furnizorId}&contractTransportId=${contractTransportId}`;
+                    window.location.href = link;
+                }
+            }
+        }
+
+        function adaugaContractTransport(furnizorId) {
+            if (furnizorId) {
+                var link = `/Home/DetaliiContractTransport?furnizorId=@furnizor?.FurnizorId.ToString()`;
+                window.location.href = link;
+            }
+        }
     </script>
 }

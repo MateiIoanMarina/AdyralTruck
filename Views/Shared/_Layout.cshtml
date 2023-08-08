@@ -1,40 +1,76 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-    <style>
-    
-    </style>
+<style>
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+    }
+</style>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Adyral Truck</title>
+    <title>Adyral Truck</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AdyralTruck.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/boostrap-icons/bootstrap-icons.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Furnizori</a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                       @* <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Furnizori</a>
-                        </li>*@
-                        @*<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>*@
+                <div class="navbar-collapse collapse flex-grow-1 text-right">
+                    <ul class="navbar-nav ms-auto flex-nowrap">
+                        <a class="navbar-brand nav-item navbar-right float-end"><i class="bi bi-person-fill"></i> @User.Identity.Name</a>
+                        <a class="navbar-brand nav-item navbar-right float-end" asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-right"></i> Iesire din Cont</a>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main style="width: 100%;" role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>

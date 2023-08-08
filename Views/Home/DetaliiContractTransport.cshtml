@@ -1,0 +1,356 @@
+﻿@using AdyralTruck.Model.ContractTransport;
+@model ContractTransportViewModel
+
+@{
+    ViewData["Title"] = "Detalii Contract Transport";
+    var contractTransport = ViewData["ContractTransport"] as ContractTransportViewModel;
+    var isUpdate = ViewData["IsUpdate"] as bool?;
+    var isSuccess = ViewData["IsSuccess"] as bool?;
+    var showSuccessUpdateMessage = isUpdate.HasValue && isUpdate is true && isSuccess.HasValue && isSuccess is true;
+    var showFailureUpdateMessage = isUpdate.HasValue && isUpdate is true && isSuccess.HasValue && isSuccess is false;
+    var comenziTransport = contractTransport?.ComenziTransport;
+}
+
+<style>
+    .errormsg {
+        color: red;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .stickyCell {
+        content: "\00a0";
+        display: block;
+        background: #fff;
+        z-index: -1;
+        top: 0;
+    }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: -5px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+            }
+            /*
+                Label the data
+            You could also use a data-* attribute and content for this. That way "bloats" the HTML, this way means you need to keep HTML and CSS in sync. Lea Verou has a clever way to handle with text-shadow.
+                */
+            td:nth-of-type(1):before {
+                content: "Furnizor";
+            }
+
+            td:nth-of-type(2):before {
+                content: "Nr. Contract";
+            }
+
+            td:nth-of-type(3):before {
+                content: "Data Contract";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Nr. Comanda";
+            }
+
+            td:nth-of-type(5):before {
+                content: "Data Comanda";
+            }
+
+            td:nth-of-type(6):before {
+                content: "Nr. Camioane";
+            }
+
+            td:nth-of-type(7):before {
+                content: "Produs";
+            }
+
+            td:nth-of-type(8):before {
+                content: "Ruta";
+            }
+
+            td:nth-of-type(9):before {
+                content: "Tarif (RON)";
+            }
+
+            td:nth-of-type(10):before {
+                content: "Data Incarcare";
+            }
+
+            td:nth-of-type(11):before {
+                content: "Tip Cantitate";
+            }
+
+            td:nth-of-type(12):before {
+                content: "Sofer";
+            }
+
+            td:nth-of-type(13):before {
+                content: "Email Trimis ?";
+            }
+    }
+</style>
+
+@if (showSuccessUpdateMessage)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Detaliile au fost actualizate cu succes.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (showFailureUpdateMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        Detaliile nu au putut fi actualizate, va rugam sa verificati ca ati completat toate casutele marcate cu <strong>*</strong> si sa reincercati.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@using (Html.BeginForm("EditeazaContractTransport", "Home", FormMethod.Post))
+{
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detalii Contract nr. @contractTransport?.NumarContract din data @contractTransport?.DataContract.ToString("dd/MM/yyyy")</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Pentru a edita detaliile contractului, toate casutele marcate cu <strong>*</strong> trebuie sa fie completate.</h6>
+            <p class="card-text">
+                <div class="formular-furnizor">
+                    <div class="row">
+                        <div class="col-sm">
+
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.NumarContract, "Nr. Contract *")
+                                @Html.TextBoxFor(m => m.NumarContract, htmlAttributes: new { @type = "number", @style = "width: 100%;", @class="form-control" })
+                                @Html.ValidationMessageFor(m => m.NumarContract, "", new { @class = "errormsg" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.DataContract, "Data Contract *")
+                                @Html.EditorFor(m => m.DataContract, "Date") @Html.ValidationMessageFor(m => m.DataContract)
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.DataExpirare, "Data Expirare (optional, daca se cunoaste)")
+                                @Html.EditorFor(m => m.DataExpirare, "Date") @Html.ValidationMessageFor(m => m.DataExpirare)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm"></div>
+                        <div class="col-sm float-start">
+                            @if (!contractTransport.Inactiv)
+                            {
+                                <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-sm btn-success center-block" value="Salveaza" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </p>
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.ContractTransportId)
+    @Html.HiddenFor(m => m.FurnizorId)
+}
+
+<br />
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">
+            Comenzi de Transport
+            @if(contractTransport != null && contractTransport.ContractTransportId != null && contractTransport.ContractTransportId != Guid.Empty && !contractTransport.Inactiv)
+            {
+                <button class="btn btn-primary btn-sm float-end" onclick="adaugaComandaTransport('@contractTransport?.ContractTransportId.ToString()')">Adauga Comanda de Transport</button>
+            }
+        </h5>
+        <br />
+        <p class="card-text">
+            <div class="row">
+                <table class="table table-responsive" style="display: block; overflow-x: auto; white-space: nowrap;">
+                    <thead>
+                        <tr role="row" style="font-weight: bold;">
+                            <th role="columnheader" scope="col">Furnizor</th>
+                            <th role="columnheader" scope="col">Nr. Contract</th>
+                            <th role="columnheader" scope="col">Data Contract</th>
+                            <th role="columnheader" scope="col">Nr. Comanda</th>
+                            <th role="columnheader" scope="col">Data Comanda</th>
+                            <th role="columnheader" scope="col">Nr. camioane</th>
+                            <th role="columnheader" scope="col">Produs Transportat</th>
+                            <th role="columnheader" scope="col">Ruta</th>
+                            <th role="columnheader" scope="col">Tarif (RON)</th>
+                            <th role="columnheader" scope="col">Data Incarcare</th>
+                            <th role="columnheader" scope="col">Tip Cantitate</th>
+                            <th role="columnheader" scope="col">Detalii Sofer</th>
+                            <th role="columnheader" scope="col">Email Trimis ?</th>
+                            <th role="columnheader" scope="col" class="stickyCell" style="position: sticky;right:180px;border-bottom-width: 0px;"></th>
+                            <th role="columnheader" scope="col" class="stickyCell" style="position: sticky;right:90px;border-bottom-width: 0px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (comenziTransport != null && comenziTransport.Any())
+                        {
+                            foreach (var comandaTransport in comenziTransport)
+                            {
+                                <tr 
+                                    class="row-click">
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" scope="row" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @contractTransport?.Furnizor?.Nume
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.ContractTransport.NumarContract
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.ContractTransport.DataContract.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.NumarComanda
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.DataComanda.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.NumarCamioane
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.ProdusTransportat
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.Ruta
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.Tarif
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.DataIncarcare.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.TipCantitate
+                                    </td>
+                                    <td role="cell" style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @comandaTransport.DetaliiSofer
+                                    </td>
+                                    <td style="background-color:@(!comandaTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToComandaTransportDetailsPage('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                        @(comandaTransport.EmailTrimisFurnizor ? "Da" : "Nu")
+                                    </td>
+                                    <td role="cell" style="position: sticky;right:180px;background-color: white !important;">
+                                        <a class="btn btn-sm btn-primary" href="/Home/ComandaTransportPdfReportDownload?comandaTransportId=@comandaTransport.ComandaTransportId.ToString()">
+                                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                                            PDF
+                                        </a>
+                                    </td>
+                                    <td role="cell" style="position: sticky;right:90px;background-color: white !important;">
+                                        <button class="btn btn-sm btn-secondary" onclick="trimiteEmailFurnizor('@comandaTransport.ComandaTransportId.ToString()', '@contractTransport?.FurnizorId.ToString()')">
+                                            <i class="bi bi-envelope-at-fill"></i>
+                                            Email
+                                        </button>
+                                    </td>
+                                    <td role="cell" style="position: sticky;right:0;background-color: white !important;">
+                                        <button class="btn btn-sm btn-danger" onclick="stergeComandaTransport('@contractTransport?.ContractTransportId.ToString()', '@comandaTransport.ComandaTransportId.ToString()')">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Sterge
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="text-center">
+                                <td colspan="9"><strong>Acest contract de transport nu are nici o comanda de transport efectuata in trecut.</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+        });
+
+        function navigateToComandaTransportDetailsPage(contractTransportId, comandaTransportId) {
+            var link = `/Home/DetaliiComandaTransport?contractTransportId=@contractTransport?.ContractTransportId.ToString()&comandaTransportId=-1`;
+            link = link.replace("-1", comandaTransportId);
+            window.location.href = link;
+        }
+
+        function stergeComandaTransport(contractTransportId, comandaTransportId) {
+            if (furnizorId) {
+                if (confirm("Doriti sa stergeti acest contract de transport ?")) {
+                    var link = `/Home/StergeComandaTransport?furnizorId=${furnizorId}&contractTransportId=${contractTransportId}`;
+                    window.location.href = link;
+                }
+            }
+        }
+
+        function adaugaComandaTransport(contractTransportId) {
+            if (contractTransportId) {
+                var link = `/Home/DetaliiComandaTransport?contractTransportId=@contractTransport?.ContractTransportId.ToString()&furnizorId=@contractTransport.FurnizorId.ToString()`;
+                window.location.href = link;
+            }
+        }
+
+        function trimiteEmailFurnizor(comandaTransportId, furnizorId) {
+            if (furnizorId) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    traditional: true,
+                    url: '@Url.Action("TrimiteContractTransportEmail", "Home")',
+                    data: {
+                        comandaTransportId: comandaTransportId,
+                        furnizorId: furnizorId
+                    },
+                    success: function () {
+                        alert('Emailul a fost trimis cu success.')
+                    },
+                    error: function () {
+                        alert('Emailul nu a fost trimis cu success.')
+                    },
+                });
+            }
+        }
+
+    </script>
+}

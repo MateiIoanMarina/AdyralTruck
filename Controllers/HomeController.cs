@@ -3,12 +3,15 @@ using AdyralTruck.Data.Entity;
 using AdyralTruck.Model.Furnizor;
 using AdyralTruck.Models;
 using AutoMapper;
-using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using AdyralTruck.Extensions;
+using AdyralTruck.Model.ContractTransport;
+using Rotativa.AspNetCore;
+using AdyralTruck.Utility;
+using Microsoft.AspNetCore.Authorization;
+using AdyralTruck.Model.ComandaTransport;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AdyralTruck.Controllers
 {
@@ -17,17 +20,26 @@ namespace AdyralTruck.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext dataContext;
         private readonly IMapper mapper;
+        private readonly IWebHostEnvironment hostingEnvironment;
 
-        public HomeController(ILogger<HomeController> logger, DataContext dataContext, IMapper mapper)
+        public HomeController(ILogger<HomeController> logger, DataContext dataContext, IMapper mapper, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             this.dataContext = dataContext;
             this.mapper = mapper;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
-        public IActionResult Index()
+        #region Furnizori
+
+        public IActionResult Index(string search = null)
         {
-            var furnizori = dataContext.Furnizori.Where(w => !w.Inactiv).ToList();
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var furnizori = dataContext.Furnizori.Where(w => !w.Inactiv && (search == null || w.Email.ToLower().Contains(search.ToLower()) || w.Nume.ToLower().Contains(search.ToLower()))).ToList();
             var furnizoriViewModels = furnizori.Select(s => mapper.Map<FurnizorViewModel>(s)).ToList();
 
             ViewData["Furnizori"] = furnizoriViewModels;
@@ -37,27 +49,42 @@ namespace AdyralTruck.Controllers
 
         public IActionResult Privacy()
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 
         public IActionResult AdaugaFurnizor()
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View();
         }
 
         public IActionResult DetaliiFurnizor(Guid furnizorId, bool isUpdate = false, bool isSuccess = false)
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             ViewData["FurnizorId"] = furnizorId.ToString();
 
-            var furnizor = dataContext.Furnizori.Include(x => x.ContracteTransport).FirstOrDefault(f => f.FurnizorId == furnizorId && !f.Inactiv);
+            var furnizor = dataContext.Furnizori.Include(x => x.ContracteTransport.Where(w => !w.Sters).OrderByDescending(o => o.NumarContract)).FirstOrDefault(f => f.FurnizorId == furnizorId && !f.Inactiv);
 
-            if(furnizor != null)
+            if (furnizor != null)
             {
                 ViewData["Furnizor"] = mapper.Map<FurnizorViewModel>(furnizor);
                 ViewData["IsUpdate"] = isUpdate;
                 ViewData["IsSuccess"] = isSuccess;
-
-                return View(mapper.Map<FurnizorViewModel>(furnizor));
+                var model = mapper.Map<FurnizorViewModel>(furnizor);
+                return View(model);
             }
 
             return View();
@@ -65,6 +92,11 @@ namespace AdyralTruck.Controllers
 
         public IActionResult StergeFurnizor(Guid furnizorId)
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var furnizor = dataContext.Furnizori.FirstOrDefault(f => f.FurnizorId == furnizorId && !f.Inactiv);
 
             if (furnizor != null)
@@ -80,19 +112,29 @@ namespace AdyralTruck.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         [HttpPost]
         public ActionResult AdaugaFurnizor(FurnizorUpdateViewModel model)
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             var item = mapper.Map<Furnizor>(model);
-            dataContext.Add<Furnizor>(item);
+            dataContext.Add(item);
             dataContext.SaveChanges(true);
 
             return RedirectToAction("Index");
@@ -101,6 +143,13 @@ namespace AdyralTruck.Controllers
         [HttpPost]
         public ActionResult EditeazaFurnizor(FurnizorViewModel model)
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            //if(model.ContracteTransport)
+
             if (ModelState["ContracteTransport"] != null) ModelState["ContracteTransport"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
 
             if (!ModelState.IsValid)
@@ -110,17 +159,411 @@ namespace AdyralTruck.Controllers
 
             var item = dataContext.Furnizori.Include(x => x.ContracteTransport).FirstOrDefault(q => q.FurnizorId == model.FurnizorId);
 
-            if(item == null)
+            if (item == null)
             {
                 return RedirectToAction("DetaliiFurnizor", new { @furnizorId = model.FurnizorId });
             }
 
+            if(model.ContracteTransport == null || !model.ContracteTransport.Any())
+            {
+                if(item.ContracteTransport != null && item.ContracteTransport.Any())
+                {
+                    model.ContracteTransport = item.ContracteTransport.Select(s => mapper.Map<ContractTransportViewModel>(s)).ToList();
+                }
+            }
+
             item = mapper.Map(model, item);
 
-            dataContext.Update<Furnizor>(item);
+            dataContext.Update(item);
             dataContext.SaveChanges(true);
 
             return RedirectToAction("DetaliiFurnizor", new { @furnizorId = model.FurnizorId, @isUpdate = true, @isSuccess = true });
         }
+
+        #endregion
+
+        #region Comenzi de Transport
+
+        public async Task<IActionResult> DetaliiComandaTransportAsync(Guid contractTransportId, Guid? comandaTransportId = null, bool isUpdate = false, bool isSuccess = false)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (comandaTransportId.HasValue && comandaTransportId.Value != Guid.Empty)
+            {
+                ViewData["ComandaTransportId"] = comandaTransportId.ToString();
+
+                var comandaTransport = dataContext.ComandaTransport.Include(x => x.ContractTransport).ThenInclude(x => x.Furnizor).FirstOrDefault(f => f.ComandaTransportId == comandaTransportId && !f.Inactiv);
+
+                if (comandaTransport != null)
+                {
+                    var comandaTransportViewModel = mapper.Map<ComandaTransportViewModel>(comandaTransport);
+                    ViewData["ComandaTransport"] = comandaTransportViewModel;
+                    ViewData["IsUpdate"] = isUpdate;
+                    ViewData["IsSuccess"] = isSuccess;
+                    return View(comandaTransportViewModel);
+                }
+            }
+            else
+            {
+                var model = new ComandaTransportViewModel();
+                var contractTransport = dataContext.ContracteTransport
+                    .Include(x => x.ComenziTransport)
+                    .FirstOrDefault(q => q.ContractTransportId == contractTransportId);
+
+                model.ContractTransport = mapper.Map<ContractTransportViewModel>(contractTransport);
+                model.ContractTransportId = contractTransportId;
+
+                var comenziContract = await dataContext.ComandaTransport.Where(w => !w.Inactiv && w.ContractTransportId == model.ContractTransportId).CountAsync();
+
+                model.NumarComanda = comenziContract + 1;
+                model.DataComanda = DateTime.Now;
+                model.DataIncarcare = DateTime.Now;
+                model.DetaliiPlata = "se va face la data primirii documentelor in original";
+
+                var comandaAnterioara = await dataContext.ComandaTransport.Where(w => w.ContractTransportId == contractTransportId && w.NumarComanda == model.NumarComanda - 1).FirstOrDefaultAsync();
+                if(comandaAnterioara != null)
+                {
+                    model.DetaliiSofer = comandaAnterioara.DetaliiSofer;
+                }
+
+                ViewData["ComandaTransport"] = model;
+                ViewData["IsUpdate"] = isUpdate;
+                ViewData["IsSuccess"] = isSuccess;
+                return View(model);
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditeazaComandaTransport(ComandaTransportViewModel model)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ModelState["ContractTransport"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("DetaliiComandaTransport", new { @contractTransportId = model.ContractTransportId, @isUpdate = true, @isSuccess = false });
+            }
+
+            var item = dataContext.ComandaTransport.Include(x => x.ContractTransport).FirstOrDefault(q => q.ComandaTransportId == model.ComandaTransportId);
+
+            if (item == null)
+            {
+                item = mapper.Map(model, item);
+                item.ContractTransport = null;
+                item.ContractTransportId = model.ContractTransportId;
+                await dataContext.ComandaTransport.AddAsync(item);
+                await dataContext.SaveChangesAsync(true);
+
+                return RedirectToAction("DetaliiContractTransport", new { @contractTransportId = model.ContractTransportId });
+            }
+
+            item = mapper.Map(model, item);
+
+            dataContext.Update(item);
+            await dataContext.SaveChangesAsync(true);
+
+            return RedirectToAction("DetaliiComandaTransport", new { comandaTransportId = model.ComandaTransportId, @isSuccess = true, @isUpdate = true });
+        }
+
+        #endregion
+
+        #region Contracte de Transport 
+
+        public async Task<IActionResult> DetaliiContractTransportAsync(Guid furnizorId, Guid? contractTransportId = null,bool isUpdate = false, bool isSuccess = false)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (contractTransportId.HasValue && contractTransportId.Value != Guid.Empty)
+            {
+                ViewData["ContractTransportId"] = contractTransportId.Value.ToString();
+
+                var contractTransport = dataContext.ContracteTransport.Include(x => x.ComenziTransport).Include(x => x.Furnizor).FirstOrDefault(f => f.ContractTransportId == contractTransportId.Value && !f.Sters);
+
+                if (contractTransport != null)
+                {
+                    var contractTransportViewModel = mapper.Map<ContractTransportViewModel>(contractTransport);
+                    ViewData["ContractTransport"] = contractTransportViewModel;
+                    ViewData["IsUpdate"] = isUpdate;
+                    ViewData["IsSuccess"] = isSuccess;
+                    return View(contractTransportViewModel);
+                }
+            }
+            else
+            {
+                var model = new ContractTransportViewModel();
+                var furnizor = dataContext.Furnizori.FirstOrDefault(q => q.FurnizorId == furnizorId);
+                model.Furnizor = mapper.Map<FurnizorViewModel>(furnizor);
+                model.FurnizorId = furnizorId;
+
+                var furnizorContracte = await dataContext.ContracteTransport.Where(w => !w.Sters && w.FurnizorId == model.FurnizorId).AnyAsync() ? 
+                    await dataContext.ContracteTransport
+                    .Where(w => !w.Sters && w.FurnizorId == model.FurnizorId)
+                    .Select(s => s.NumarContract)
+                    .MaxAsync() : 0;
+
+                model.NumarContract = furnizorContracte + 1;
+                model.DataContract = DateTime.Now;
+                model.Created = DateTime.Now;
+
+                ViewData["ContractTransport"] = model;
+                ViewData["IsUpdate"] = isUpdate;
+                ViewData["IsSuccess"] = isSuccess;
+                return View(model);
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditeazaContractTransport(ContractTransportViewModel model)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ModelState.Remove("Furnizor");
+            ModelState.Remove("ComenziTransport");
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("DetaliiContractTransport", new { @furnizorId = model.FurnizorId, @contractTransportId = model.ContractTransportId, @isUpdate = true, @isSuccess = false });
+            }
+
+            var item = dataContext.ContracteTransport.Include(x => x.Furnizor).FirstOrDefault(q => q.ContractTransportId == model.ContractTransportId);
+
+            if (item == null)
+            {
+                item = mapper.Map(model, item);
+                item.FurnizorId = model.FurnizorId;
+                await dataContext.ContracteTransport.AddAsync(item);
+
+                await dataContext.SaveChangesAsync(true);
+
+                var previousContractTransports = await dataContext.ContracteTransport.Where(w => !w.Inactiv && w.ContractTransportId != item.ContractTransportId).ToListAsync();
+                if (previousContractTransports.Any())
+                {
+                    previousContractTransports.ForEach(f => f.Inactiv = true);
+                    dataContext.ContracteTransport.UpdateRange(previousContractTransports);
+                }
+
+                await dataContext.SaveChangesAsync(true);
+
+                return RedirectToAction("DetaliiFurnizor", new { furnizorId = model.FurnizorId });
+            }
+
+            item = mapper.Map(model, item);
+
+            dataContext.Update(item);
+            await dataContext.SaveChangesAsync(true);
+
+            return RedirectToAction("DetaliiContractTransport", new { @contractTransportId = model.ContractTransportId, @isSuccess = true, @isUpdate = true });
+        }
+
+        public IActionResult StergeContractTransport(Guid furnizorId, Guid contractTransportId)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var contractTransport = dataContext.ContracteTransport.FirstOrDefault(f => f.ContractTransportId == contractTransportId);
+
+            if (contractTransport != null)
+            {
+                contractTransport.Sters = true;
+                dataContext.ContracteTransport.Update(contractTransport);
+                dataContext.SaveChanges(true);
+            }
+
+            return RedirectToAction("DetaliiFurnizor", new { @furnizorId = furnizorId });
+        }
+
+        public IActionResult StergeComandaTransport(Guid furnizorId, Guid comandaTransportId)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var comandaTransport = dataContext.ComandaTransport.FirstOrDefault(f => f.ComandaTransportId == comandaTransportId && !f.Inactiv);
+
+            if (comandaTransport != null)
+            {
+                comandaTransport.Inactiv = true;
+                dataContext.ComandaTransport.Update(comandaTransport);
+                dataContext.SaveChanges();
+            }
+
+            return RedirectToAction("DetaliiContractTransport", new { @furnizorId = furnizorId, @contractTransportId = comandaTransport.ContractTransportId });
+        }
+
+        #endregion
+
+        #region Contract de Transport PDF Export
+
+        public async Task<IActionResult> ContractTransportPdfReportDownloadAsync(Guid contractTransportId)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var contractTransport = await dataContext.ContracteTransport.Include(x => x.Furnizor).FirstOrDefaultAsync(x => x.ContractTransportId == contractTransportId);
+
+            if (contractTransport == null)
+            {
+                //??
+            }
+
+            var model = mapper.Map<ContractTransportViewModel>(contractTransport);
+
+            string fileDownloadName = string.Format("Contract Transport {0} - {1} - {2}", model.Furnizor?.Nume, model.NumarContract, model.DataContract.ToString("dd/MM/yyyy"));
+
+            var result = new Rotativa.AspNetCore.ViewAsPdf("ContractTransportPdfReport", model)
+            {
+                FileName = string.Format("{0}.pdf", fileDownloadName),
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                IsLowQuality = true,
+                MinimumFontSize = 14,
+                IsJavaScriptDisabled = true,
+                WkhtmlPath = Path.Combine(hostingEnvironment.WebRootPath, "Rotativa"),
+            };
+
+            return result;
+        }
+
+        public async Task<IActionResult> ComandaTransportPdfReportDownloadAsync(Guid comandaTransportId)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var comandaTransport = await dataContext.ComandaTransport.Include(x => x.ContractTransport).ThenInclude(x => x.Furnizor).FirstOrDefaultAsync(x => x.ComandaTransportId == comandaTransportId);
+
+            if (comandaTransport == null)
+            {
+                return RedirectToAction("DetaliiComandaTransport", "Home", new { @contractTransportId = comandaTransport?.ContractTransportId, @comandaTransportId = comandaTransportId });
+            }
+
+            var model = mapper.Map<ComandaTransportViewModel>(comandaTransport);
+
+            string fileDownloadName = string.Format("Comanda Transport {0} - {1} - {2}", model.ContractTransport?.Furnizor?.Nume, model.NumarComanda, model.DataComanda.ToString("dd/MM/yyyy"));
+
+            //var result = new Rotativa.AspNetCore.ViewAsPdf("ComandaTransportPdfReport", model)
+            //{
+            //    FileName = string.Format("{0}.pdf", fileDownloadName),
+            //    PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+            //    PageSize = Rotativa.AspNetCore.Options.Size.A4,
+            //    IsLowQuality = true,
+            //    MinimumFontSize = 14,
+            //    IsJavaScriptDisabled = true,
+            //    ContentType = "application/pdf",
+            //    //CustomSwitches = "--disable-smart-shrinking"
+            //};
+
+            var result = new Rotativa.AspNetCore.ViewAsPdf("ComandaTransportPdfReport", model)
+            {
+                FileName = string.Format("{0}.pdf", fileDownloadName),
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                IsLowQuality = true,
+                MinimumFontSize = 14,
+                IsJavaScriptDisabled = true,
+                WkhtmlPath = Path.Combine(hostingEnvironment.WebRootPath, "Rotativa"),
+            };
+
+            return result;
+        }
+
+        public async Task<IActionResult> TrimiteContractTransportEmail(Guid comandaTransportId, Guid furnizorId)
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var comandaTransport = await dataContext.ComandaTransport.Include(x => x.ContractTransport).ThenInclude(x => x.Furnizor).FirstOrDefaultAsync(x => x.ComandaTransportId == comandaTransportId);
+
+            if (comandaTransport == null)
+            {
+                return new JsonResult(new { @success = false });
+            }
+
+            var model = mapper.Map<ComandaTransportViewModel>(comandaTransport);
+
+            var furnizor = await dataContext.Furnizori.Where(w => w.FurnizorId == furnizorId).FirstOrDefaultAsync();
+
+            string comandaFileDownloadName = string.Format("Comanda Transport {0} - {1} - {2}.pdf", model.ContractTransport.Furnizor?.Nume, model.NumarContract, model.DataContract.ToString("dd/MM/yyyy"));
+
+            var comandaResult = new Rotativa.AspNetCore.ViewAsPdf("ComandaTransportPdfReport", model)
+            {
+                FileName = string.Format("{0}.pdf", comandaFileDownloadName),
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                IsLowQuality = true,
+                MinimumFontSize = 14,
+                IsJavaScriptDisabled = true,
+                WkhtmlPath = Path.Combine(hostingEnvironment.WebRootPath, "Rotativa"),
+            };
+
+            var byteArrayComanda = await comandaResult.BuildFile(ControllerContext);
+            var base64StringComanda = Convert.ToBase64String(byteArrayComanda);
+
+            string contractFileDownloadName = string.Format("Contract Transport {0} - {1}.pdf", model.NumarContract, model.DataContract.ToString("dd/MM/yyyy"));
+
+            var contractResult = new Rotativa.AspNetCore.ViewAsPdf("ContractTransportPdfReport", model.ContractTransport)
+            {
+                FileName = string.Format("{0}.pdf", contractFileDownloadName),
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                IsLowQuality = true,
+                MinimumFontSize = 14,
+                IsJavaScriptDisabled = true,
+                WkhtmlPath = Path.Combine(hostingEnvironment.WebRootPath, "Rotativa"),
+            };
+
+            var byteArrayContract = await contractResult.BuildFile(ControllerContext);
+            var base64StringContract = Convert.ToBase64String(byteArrayContract);
+
+            var firstLine = "<p>Buna ziua,</p>";
+            var secondLine = $"<p>Atasez documentele in vederea transportului.<p>";
+            var thirdLine = $"<p>Va rugam sa le retransmiteti semnate si stampilate pe aceasta adresa de e-mail.</p>" +
+                $"<p>Documentele originale va rugam sa le transmiteti la adresa de corespondenta <strong>Sos. De Centura nr. 16, Com. Dobroesti, jud. Ilfov, DOAR PRIN CURIER.</strong></p> <br/>";
+            var fourthLine = "<p>Va multumim,</p><p>Adyral Truck S.R.L.</p>";
+
+            var htmlMessage = firstLine + secondLine + thirdLine + fourthLine;
+
+            await EmailUtility.SendEmail(
+                htmlMessage, 
+                $"Contract de Transport - {model.ContractTransport?.Furnizor?.Nume} Nr. {model.NumarContract}", 
+                base64StringComanda, 
+                comandaFileDownloadName, 
+                base64StringContract,
+                contractFileDownloadName,
+                model.ContractTransport?.Furnizor?.Email);
+
+            comandaTransport.EmailTrimisFurnizor = true;
+            dataContext.ComandaTransport.Update(comandaTransport);
+            await dataContext.SaveChangesAsync(true);
+
+            return new JsonResult(new { @success = true });
+        }
+
+        #endregion
     }
 }

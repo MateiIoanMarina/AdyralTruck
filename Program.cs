@@ -1,6 +1,8 @@
 using AdyralTruck.Data.Context;
 using AdyralTruck.Service.Mapping;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,13 @@ builder.Services.AddControllersWithViews();
 // data context
 builder.Services.AddDbContext<DataContext>(cfg =>
 {
+    //Server=(local);Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True
+    //"Server=WIN-1BE6D6M2J9M\\SQLEXPRESS;Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True
     cfg.UseSqlServer("Server=(local);Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 });
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 // singleton services
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -21,6 +28,12 @@ builder.Services.AddAutoMapper(typeof(Program),
     typeof(FurnizorMappingProfile));
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dataContext.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -38,11 +51,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+RotativaConfiguration.Setup(app.Environment.WebRootPath);
 
 app.Run();

@@ -1,0 +1,97 @@
+﻿@using AdyralTruck.Model.ComandaTransport;
+@model ComandaTransportViewModel
+
+@{
+    Layout = "~/Views/Shared/_PdfLayout.cshtml";
+}
+
+<style>
+.textt {
+    font-size: medium;
+}
+</style>
+
+@if (Model != null && Model.ContractTransport != null && Model.ContractTransport.Furnizor != null)
+{
+    <div class="container textt">
+        <div class="card" style="width: 100%;padding: 5px;border: none;padding-bottom: 0px !important;">
+            <div class="card-body">
+                <h5 class="card-title">Adyral Truck S.R.L.</h5>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">Adresa: Com. Nuci, sat Micsunesti - Moara, str. Viitorului, nr. 17, jud. Ilfov</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">CIF: RO 28758200</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">Reg. Com: J23/1764/2011</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">IBAN: RO48 INGB 0000 9999 0681 2454</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">BANCA: ING BANK NV</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">E-mail: adyraltruck@yahoo.com</h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">Adresa Corespondenta: Sos. De Centura nr. 16, Com. Dobroesti, jud. Ilfov - <b>PRIN CURIER</b></h6>
+                <h6  style="font-size: 18px; color: red;" class="card-subtitle mb-2">Tel: 0761.679.867</h6>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col text-center">
+                <b>
+                    CONTRACT DE TRANSPORT NR.
+                    <span>@Model.NumarContract.ToString()</span> / <span>@Model.DataContract.ToString("dd.MM.yyyy")</span>
+                </b><br />
+                <b>
+                    COMANDA DE TRANSPORT NR.
+                    <span>@Model.NumarComanda</span> / <span>@Model.DataComanda.ToString("dd.MM.yyyy")</span>
+                </b><br />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <span>Catre,</span><br />
+            <span><b>@Model.ContractTransport.Furnizor?.Nume</b></span><br />
+            <span><b>CIF:</b> @Model.ContractTransport.Furnizor?.CIF</span><br />
+            <span><b>Reg. Com:</b> @Model.ContractTransport.Furnizor?.NrRegistruComert</span><br />
+            <span><b>BANCA:</b> @Model.ContractTransport.Furnizor?.NumeBanca</span><br />
+            <span><b>E-MAIL:</b> @Model.ContractTransport.Furnizor?.Email</span><br />
+            <span><b>PERS. CONTACT:</b> @Model.ContractTransport.Furnizor?.PersoanaContact</span><br />
+            <span>Va rugam sa ne puneti la dispozitie <span>@Model.NumarCamioane.ToString()</span> <span>@(Model.NumarCamioane > 1 ? "camioane" : "camion")</span> pentru efectuarea cursei de <b>@Model.ProdusTransportat.ToUpper()</b> pentru </span>
+            <span><b>RUTA:</b> <span>@Model.Ruta</span>.</span><br />
+            <span><b>DATA INCARCARII:</b> <span>@Model.DataIncarcare.ToString("dd.MM.yyyy")</span></span><br />
+            <span><b>TARIF:</b> <strong style="font-size: 18px;">@Model.Tarif LEI + TVA/TONA</strong> </span><br />
+            <span><b>PLATA:</b> <strong style="font-size: 18px;">@Model.DetaliiPlata</strong> </span><br />
+            <span>SE FACTUREAZA CANTITATEA <b>@Model.TipCantitate.ToUpper()</b></span><br /><br />
+        </div>
+        <div class="row">
+            <p style="color: red;">
+                <b>
+                    OBS: CONDUCATORUL AUTO TREBUIE SA OPREASCA TICHETELE DE LA INCARCARE - I SE VOR DA DOUA, DINTRE CARE ORIGINALUL VA AJUNGE LA SOCIETATEA NOASTRA, CAT SI TICHETUL DE LA DESCARCARE, SI CMR-UL IN ORIGINAL STAMPILAT.
+                </b>
+            </p>
+        </div>
+        <div class="row" style="border: none;">
+            <span>Transportul se executa pe baza conventiei CMR, asigurare CMR valabila pe intreg parcursul tranportului, in cuantum de 20.000 euro.</span><br />
+            <span>Prezenta comanda este considerata acceptata fara rezerve, daca nu este refuzata in scris in termen de 1h de la primirea ei.</span><br />
+            <span>Transportatorul se obliga sa pastreze pe intreaga durata a executarii transportului, precum si dupa incetarea acestuia, confidentialitatea datelor si informatiilor cu care intra in contact.</span><br />
+            <span>In calitate de caraus aveti obligatia: sa verificati, atat la incarcare, cat si la descarcare, cantitatea si calitatea marfii, care trebuie sa coincida cu datele mentionate in documente, respectiv CMR, AVIZ INSOTIRE A MARFII, TICHET DE CANTAR.</span><br />
+            <span>Transportatorul este direct raspunzator pentru deteriorare/distrugerea/pierderea/furtul marfii pe durata transportului.</span><br />
+            <span>Este interzisa transportarea marfii fara acordul nostru si fara a avea motive intemeiate in acest sens.</span><br />
+            <span>Plata facturii se va face la data primirii documentelor in original.( scrisoare CMR, tichete de cantar, aviz ).</span><br />
+            <span>Vehiculul utilizat trebuie sa fie in stare tehnica buna, curat, echipat corespunzator, pentru a asigura marfa in timpul tranportului.</span><br /><br />
+            <span><b>Va rugam sa transmiteti urmatoarele:</b></span><br />
+            <span><b>Licenta de transport a societatii.</b></span><br />
+            <span><b>Licenta de transport auto.</b></span><br />
+            <span><b>Autorizatia sanitar - veterinara.</b></span><br />
+            <span><b>Asigurarea cmr - dovada valabilitate.</b></span><br />
+            <span><b>Va rugam sa ne comunicati atat in comanda cat si la nr de tel. 0761.679.867.</b></span><br />
+            <span><b>Nume sofer:</b> <span>@Model.DetaliiSofer</span></span><br />
+            <span><b>Coordonate gps incarcare- descarcare: </b></span><br />
+            <span><b>Interdictii locatii conducator auto: </b></span><br />
+        </div>
+        <br /> <br />
+        <br /> <br />
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <b>S.C. ADYRAL TRUCK SRL</b> <b style="margin-left: 400px !important;">@Model.ContractTransport.Furnizor?.Nume.ToUpper()</b><br />
+                    <img src="~/images/semnatura5.png" style="max-width: 100px;max-height:100px;" />
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+}

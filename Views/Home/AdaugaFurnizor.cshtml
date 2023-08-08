@@ -30,26 +30,26 @@
 
                 <div class="form-group">
                     @Html.LabelFor(m => m.Nume, "Nume *")
-                    @Html.TextBoxFor(m => m.Nume, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.TextBoxFor(m => m.Nume, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                     @Html.ValidationMessageFor(m => m.Nume, "", new { @class = "errormsg" })
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.NrRegistruComert, "Mr. Reg. Comert *")
-                    @Html.TextBoxFor(m => m.NrRegistruComert, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.LabelFor(m => m.NrRegistruComert, "Nr. Reg. Comert *")
+                    @Html.TextBoxFor(m => m.NrRegistruComert, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                     @Html.ValidationMessageFor(m => m.NrRegistruComert, "", new { @class = "errormsg" })
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.Email, "Email *")
-                    @Html.TextBoxFor(m => m.Email, "", new { style = "width: 100%;", type = "email" })
+                    @Html.TextBoxFor(m => m.Email, "", new { style = "width: 100%;", type = "email", @class="form-control" })
                     @Html.ValidationMessageFor(m => m.Email, "", new { @class = "errormsg" })
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.PersoanaContact, "Persoana Contact")
-                    @Html.TextBoxFor(m => m.PersoanaContact, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.TextBoxFor(m => m.PersoanaContact, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.AdresaCorespondenta, "Adresa *")
-                    @Html.TextAreaFor(m => m.AdresaCorespondenta, htmlAttributes: new { @style = "width: 100%;", rows = 3 })
+                    @Html.TextAreaFor(m => m.AdresaCorespondenta, htmlAttributes: new { @style = "width: 100%;", rows = 3, @class="form-control" })
                     @Html.ValidationMessageFor(m => m.AdresaCorespondenta, "", new { @class = "errormsg" })
                 </div>
             </div>
@@ -57,17 +57,22 @@
             <div class="col-sm">
                 <div class="form-group">
                     @Html.LabelFor(m => m.CIF, "CIF *")
-                    @Html.TextBoxFor(m => m.CIF, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.TextBoxFor(m => m.CIF, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                     @Html.ValidationMessageFor(m => m.CIF, "", new { @class = "errormsg" })
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.NumeBanca, "Banca *")
-                    @Html.TextBoxFor(m => m.NumeBanca, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.TextBoxFor(m => m.NumeBanca, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                     @Html.ValidationMessageFor(m => m.NumeBanca, "", new { @class = "errormsg" })
                 </div>
                 <div class="form-group">
+                    @Html.LabelFor(m => m.ContBancar, "Cont Bancar *")
+                    @Html.TextBoxFor(m => m.ContBancar, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
+                    @Html.ValidationMessageFor(m => m.ContBancar, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
                     @Html.LabelFor(m => m.NumarTelefon, "Nr. Telefon")
-                    @Html.TextBoxFor(m => m.NumarTelefon, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.TextBoxFor(m => m.NumarTelefon, htmlAttributes: new { @style = "width: 100%;", @class="form-control" })
                 </div>
             </div>
             

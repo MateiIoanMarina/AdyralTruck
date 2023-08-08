@@ -1,0 +1,39 @@
+﻿@if (TempData.ContainsKey("MessageType") && TempData.ContainsKey("Message"))
+{
+    if (TempData["MessageType"] == "error")
+    {
+        <div class="alert alert-danger">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <p>
+                <i class="fa fa-exclamation-circle"></i>@Html.Raw(TempData["Message"])
+            </p>
+        </div>
+    }
+    if (TempData["MessageType"] == "warning")
+    {
+        <div class="alert alert-warning">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <p>
+                <i class="fa fa-warning"></i>@Html.Raw(TempData["Message"])
+            </p>
+        </div>
+    }
+    if (TempData["MessageType"] == "succes")
+    {
+        <div class="alert alert-success">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <p>
+                <i class="fa fa-check-circle-o"></i>@Html.Raw(TempData["Message"])
+            </p>
+        </div>
+    }
+    if (TempData["MessageType"] == "info")
+    {
+        <div class="alert alert-info">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <p>
+                <i class="fa fa-info-circle"></i>@Html.Raw(TempData["Message"])
+            </p>
+        </div>
+    }
+}

@@ -1,0 +1,101 @@
+﻿@using AdyralTruck.Model.ComandaTransport;
+@model ComandaTransportViewModel
+
+<style>
+    .errormsg {
+        color: red;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+</style>
+
+@{
+    ViewData["Title"] = "Comanda Transport Noua";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<p class="text-center">Completati toate campurile de mai jos marcate cu <strong style="color: red;">*</strong></p>
+
+@using (Html.BeginForm("AdaugaComandaTransport", "Home", FormMethod.Post))
+{
+    <div class="formular-furnizor">
+        <div class="row">
+            <div class="col-sm">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ContractTransport.NumarContract, "Nr. Contract *")
+                    @Html.TextBoxFor(m => m.ContractTransport.NumarContract, htmlAttributes: new { @style = "width: 100%;", @type = "numeric", @readonly = true })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ContractTransport.DataContract, "Data Contract *")
+                    @Html.EditorFor(m => m.ContractTransport.DataContract, "Date", new { @readonly = true })
+                    @Html.ValidationMessageFor(m => m.DataContract, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.NumarComanda, "Nr. Comanda *")
+                    @Html.TextBoxFor(m => m.NumarComanda, htmlAttributes: new { @style = "width: 100%;", @type = "numeric" })
+                    @Html.ValidationMessageFor(m => m.NumarComanda, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DataComanda, "Data Comanda *")
+                    @Html.EditorFor(m => m.DataComanda, "Date")
+                    @Html.ValidationMessageFor(m => m.DataComanda, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.NumarCamioane, "Nr. Camioane *")
+                    @Html.TextBoxFor(m => m.NumarCamioane, htmlAttributes: new { @style = "width: 100%;", @type = "numeric" })
+                    @Html.ValidationMessageFor(m => m.NumarCamioane, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ProdusTransportat, "Produs Transportat *")
+                    @Html.TextBoxFor(m => m.ProdusTransportat, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.ProdusTransportat, "", new { @class = "errormsg" })
+                </div>
+            </div>
+
+            <div class="col-sm">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Ruta, "Ruta *")
+                    @Html.TextBoxFor(m => m.Ruta, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.Ruta, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DataIncarcare, "Data Incarcare *")
+                    @Html.EditorFor(m => m.DataIncarcare, "Date")
+                    @Html.ValidationMessageFor(m => m.DataIncarcare, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Tarif, "Tarif *")
+                    @Html.TextBoxFor(m => m.Tarif, htmlAttributes: new { @style = "width: 100%;", @type = "numeric" })
+                    @Html.ValidationMessageFor(m => m.Tarif, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TipCantitate, "Tip Cantitate (Incarcata sau Descarcata) *")
+                    @Html.TextBoxFor(m => m.TipCantitate, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.TipCantitate, "", new { @class = "errormsg" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DetaliiSofer, "Detalii Sofer *")
+                    @Html.TextBoxFor(m => m.DetaliiSofer, htmlAttributes: new { @style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.DetaliiSofer, "", new { @class = "errormsg" })
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <input id="saveButton" type="submit" style="margin-top: 50px;" class="btn btn-primary btn-success center-block" value="Salveaza" />
+            </div>
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.ContractTransportId)
+}
+
+

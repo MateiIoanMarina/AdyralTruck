@@ -1,0 +1,285 @@
+﻿@using AdyralTruck.Model.ContractTransport;
+@model ContractTransportViewModel
+
+@{
+    Layout = "~/Views/Shared/_PdfLayout.cshtml";
+}
+
+<style>
+    .textt {
+        font-size: large;
+    }
+</style>
+
+@if (Model != null && Model.Furnizor != null)
+{
+    <div class="container textt">
+        <div class="row">
+            <div class="col text-center">
+                <b>
+                    <p>CONTRACT DE PRESTĂRI SERVICII</p>
+                </b>
+            </div>
+        </div>
+         <div class="row">
+            <div class="col text-center">
+                <b>
+                    <p>DE TRANSPORT RUTIER DE MĂRFURI</p>
+                </b>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <b>
+                    <p>Nr . ATK/@Model.NumarContract din DATA @Model.DataContract.ToString("dd.MM.yyyy")</p>
+                </b>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <p>
+                Art.1. PARTILE:
+                <b>SC ADYRAL TRUCK SRL</b>, cu sediul in Com. Nuci, Str. Viitorului, nr.17, judetul ILFOV, telefon 0761.67.98.67 , inregistrata la Registrul Comertului sub nr. J23/1764/2011, Cod fiscal RO28758200, cont bancar <b>RO48 INGB 0000 9999 0681 2454</b>, deschis la <b>ING BANK</b>, reprezentata prin Rusen Cristian Marius in calitate de Administrator, si Florescu Steluta Gabriela, in calitate de coordonator transport, in continuare denumită  <b>BENEFICIAR</b>
+            </p>
+            <p class="text-center"><b>SI,</b></p>
+            <p>
+                <b>@Model.Furnizor?.Nume</b> cu sediul în @Model.Furnizor?.AdresaCorespondenta, telefon @Model.Furnizor?.NumarTelefon cont de virament nr.: @Model.Furnizor?.ContBancar deschis la @Model.Furnizor?.NumeBanca, înregistrată la Registrul Comerţului sub nr. @Model.Furnizor?.NrRegistruComert având cod fiscal nr @Model.Furnizor?.CIF, reprezentată prin @Model.Furnizor?.PersoanaContact, în calitate de TRANSPORTATOR
+            </p>
+        </div>
+        <br />
+        <div class="row">
+            <p><b>Art.2. <u>OBIECTUL CONTRACTULUI</u></b></p>
+            <p>2.1. Obiectul prezentului contract il constituie prestarea de servicii de transport cereale, de catre PRESTATOR, la cererea BENEFICIARULUI, in conditiile mentionate in prezentul contract. Marfa este individualizata conform avizelor de insotire a marfii, tichetelor de cantar, certificateleor de calitate, CMR-urilor sau scrisorilor de transport, si a documentelor ce insotesc fiecare livrare in parte.</p>
+            <p>
+                2.2. Transportul marfii se executa de catre transportator cu mijloace adecvate transportului de cereale/oleaginoase/sroturi oleaginoase. Mijloacele de transport ce vor fi folosite de catre Transportator trebuie autorizate in acest scop si trebuie sa indeplineasca urmatoarele conditii:
+            </p>
+            <p>
+                I. sa fie igienizate eficient, iar atunci cand este cazul dezinfectate. Igienizarea si dezinsectia trebuie realizate potrivit normelor in vigoare..si trebuie efectuata cu o frecventa suficienta, astfel incat sa se evite orice risc de contaminare a marfii transportate.
+            </p>
+            <p>
+                II. sa fie autorizate sanitar-veterinar; sa pastreze pe toata durata transportului caracteristicile organoleptice, nutritive, fizico-chimice, si microbiologice a marfii transportate; sa ofere protectie impotriva precipitatilor, insectelor, rozatoarelor si a altor posibilitati de poluare, degradare, contaminare
+            </p>
+            <p>
+                III. atunci cand mijloacele de transport au fost folosite pentru transportul altor bunuri decat cele alimentare, Transportatorul trebuie sa efectueze o igienizare eficienta pentru a evita riscul de contaminare conform cerintelor impuse de GMP(Genetically Modified Products). Transportatorul isi asuma responsabilitatea si confirma in scris care au fost ultimile 3 produse incarcate precum si tipurile de curatare aplicate.
+            </p>
+            <p>
+                IV. sa fie spalate si igienizate dupa fiecare transport
+            </p>
+            <p>
+                V. sa se inchida etans, sa nu prezinte vicii ascunse sau fisuri si sa aiba prelate intacta.
+            </p>
+            <p>
+                2.3. Prestarea serviciilor de transport pentru fiecare caz in parte se va face in baza comenzilor scrise ale BENEFICIARULUI, comunicate prin fax/ e-mail/ poştă/ curier sau telefonic. Comanda va cuprinde toate datele si informaţiile necesare executării serviciilor solicitate.
+            </p>
+            <p>
+                2.4. Transportatorul efectueaza transporturile conform licentelor de executie si transport si a avizelor legale necesare, aflate in perioada de valabilitate. Responsabilitatea legalitatii executarii transportului, atat in ceea ce priveste mijloacele folosite, cat si in ceea ce priveste legalitatea angajarii soferilor care le conduc si a instructajului acestora, revine Transportatorului, pana la acoperirea integrala a oricarui prejudiciu.
+            </p>
+            <p>
+                <b>Art.3. <u>DURATA CONTRACTULUI</u></b>
+            </p>
+            <p>
+                3.1. Prezentul contract intra in vigoare la data semnarii acestuia de catre ambele parti,  se incheie p e o perioada de 12 luni. Contractul poate fi prelungit de comun acord numai printr-un act aditional semnat de ambele parti.
+            </p>
+            <p>
+                3.2. În cazul în care contractul nu a fost prelungit, prestările efectuate după data expirării nu sunt supuse dispoziţiilor prezentului.
+            </p>
+            <p>
+                <b>Art.4. <u>TARIFE. FACTURARE. MODALITATEA DE PLATA</u></b>
+            </p>
+            <p>
+                4.1. Pretul pe cursa se va negocia inainte de executarea fiecarui transport in functie de distanta parcursa si de cantitatea incarcata. Comanda Beneficiarului confirmata de catre Prestator urmată de executarea transportului de către acesta este considerată acceptare a tarifului cuprins în aceasta de către ambele părţi. Facturile vor fi insotite de devize de calcul, (borderouri) ce sunt considerate acte aditionale ale prezentului contract. Plata transportului se face numai dupa efectuarea acestuia in baza originalului facturii emise de Transportator si a documentelor justificative dupa cum urmeaza:
+            </p>
+            <p>
+                I. CMR pentru fiecare cursa efectuata – completat conform legilor in vigoare (in original)
+            </p>
+            <p>
+                II. note de receptie sau note de cantar – (in original)
+            </p>
+            <p>
+                III. avizele de insotire a marfii ( copies au original)
+            </p>
+            <p>
+                4.2 Baza de facturare pentru plata transportului este constituita de cantitatea si calitatea confirmata documentar la punctul de descarcare. Pentru cazurile in care pretul este stabilit in valuta, plata se va face in RON la cursul BNR din data anterioara facturarii.
+            </p>
+            <p>
+                4.3. Facturarea prestatiei se va face în termen de cel mult 7 zile calendaristice de la data transportului efectuat conform bonurilor de transport verificate si aprobate de BENEFICIAR. Netrimiterea documetelor si a facturilor in termenul mai sus mentionat va atrage dupa sine prelungirea termenului de plata cu 60 zile.
+            </p>
+            <p>
+                4.4. Plata se va efectua in termen de 30 zile  de la data primirii facturii fiscale în original de către Beneficiar si a tuturor documentelor justificative in original. Plata se face cu ordin de plată, în contul arătat la Art.1 sau înscris pe factură, ori in alt document emis de TRANSPORTATOR.
+            </p>
+            <p>
+                4.5 In caz de deteriorare /depreciere calitativa sau cantitativa, ori contaminare a marfurilor in timpul transportului, astfel incat marfa nu poate fi receptionata / a fost refuzta de catre destinatar / operatorul portuar, Transportatorul are obligatia sa restituie intreaga cantitate de marfa  depreciata / deteriorata sau contaminate la locul de incarcare, contravaloarea transportului de la locul de incarcare si retur fiind suportata de catre Transportator.
+            </p>
+            <p>
+                Intreaga cantitate de marfa  deteriorata / depreciata sau contaminata va fi imputata Transportatorului in baza unei facturi emise de catre Beneficiar.
+            </p>
+            <p>
+                <b>Art.5. <u>EXECUTAREA CONTRACTULUI. RECEPTIA CANTITATIVA SI CALITATIVA</u></b>
+            </p>
+            <p>
+                5.1. Receptia marfii se va efectua la sediul Beneficiarului sau la destinaţia indicată de acesta în comandă, in prezenta delegatului Transportatorului.
+            </p>
+            <p>
+                5.2. Reclamaţiile privind lipsurile cantitative şi deteriorarea ori distrugerea totală a mărfii se fac la termenele şi în condiţiile prevăzute de legislaţia aplicabilă (O.G. nr.27/2011 privind transporturile rutiere şi Convenţia referitoare la contractul de transport internaţional de mărfuri pe şosele, ratificată prin Decretul nr.451/1972).
+            </p>
+            <p>
+                5.3. Incarcarea camioanelor se va face cu respectarea prevederilor legale privind masa totală maximă admisă, masele maxime admise pe axe şi  dimensiunile admise (O.G. nr. 43/1997 privind regimul drumurilor şi normele RNTR aplicabile).
+            </p>
+            <p>
+                In cazul in care transportatorul  nu respecta art.5.3.contractul de transport se va rezilia cu data descoperirii neregulii, beneficiarul fiind indreptatit sa ceara daune interese in functie de prejudiciul creat.
+            </p>
+            <p>
+                5.4. Prestatorul va efectua transportul în termenul şi la datele prevăzute în comandă. Orice modificare aparuta in derularea transportului, va fi comunicata imediat Beneficiarului.
+            </p>
+            <p>
+                <b>Art.6. <u>OBLIGATIILE PARTILOR</u></b>
+            </p>
+            <p>
+                <b>6.1. OBLIGATIILE TRANSPORTATORULUI:</b>
+            </p>
+            <p>
+                6.1.1. Sa asigure mijlocul de transport adecvat, în funcţie de tipul mărfii transportate, având o capacitate suficienta şi necesară pentru cantitatea care se va transporta si aflat in stare corespunzatoare din punct de vedere tehnic (ITP şi reviziile obligatorii la zi). Mijlocul de transport va fi prezent la data stabilită prin comandă, la ora convenită de comun acord în timpul programului de lucru al BENEFICIARULUI. Daca autovehiculul nu corespunde cerintelor expeditorului, prezentand defectiuni tehnice, nu este propriu naturii marfii sau nu are dotarile necesare, TRANSPORTATORUL este obligat înlocuiască autovehiculul cu un altul corespunzator in cel mai scurt timp posibil;
+            </p>
+            <p>
+                6.1.2 Sa efectueze transportul produselor vrac, la destinatiile stabilite, in conditii de siguranta. Transportatorul va controla mijloacele de transport inainte de fiecare incarcare si va raspunde pentru starea de igiena, starea tehnica, functional si dotarile acestora.
+            </p>
+            <p>
+                6.1.3 Transportatorul va verifica modul de incarcare si de inchidere corecta a mijloacelor de transport, va lua in primire marfa, va verifica exactitatea documentelor emise de catre Beneficiar si nu va pleca de la locul incarcarii fara obligatia sa intocmeasca documentul justificativ de transport – CMR, potrivit legislatiei in vigoare.
+            </p>
+            <p>
+                6.1.4 Transportatorul este obligat sa supravegheze incarcarea si descarcarea marfii si sa asigure integritatea acesteia, raspunzand material pana la acoperirea intregului prejudiciului cauzat de orice lipsa, deteriorare / depreciere calitativa sau cantitativa ori contaminare a acesteia.
+            </p>
+            <p>
+                6.1.5 Transportatorul se obliga sa transporte si sa predea marfa in termenul si la locul de destinatie stabilit de catre Beneficiar, si comunicat la momentul transmiterii comenzii.
+            </p>
+            <p>
+                6.1.6   Responsabilitatea asigurarii cantitatii si calitatii marfii transportate cade in sarcina Transportatorului, pe toata durata transportului, pana in momentul intocmirii actelor de receptie.
+            </p>
+            <p>
+                6.1.7. Sa supravegheze atât incarcarea cât si descarcarea mijlocului de transport. Drepturile si obligatiile Transportatorului in privinta incarcarii si descarcarii marfurilor sunt conforme cu reglementarile acordului CMR, precum si cu celelalte reglementari ale legislatiei aplicabile transportului de mărfuri periculoase (Acordul European referitor la transportul rutier al mărfurilor periculoase – ADR şi Norma de efectuare a activităţii de transport rutier de mărfuri periculoase în România aprobată prin H.G.nr.1175/2007);
+            </p>
+            <p>
+                6.1.8. Sa respecte obligaţiile legale privind transportul mărfurilor de natura celor care fac obiectul prezentului contract şi să se asigure că, pe durata validităţii acestuia, nu va exista nicio abatere de la reglementările aplicabile în materie;  în acest sens, TRANSPORTATORUL se obliga sa procure toate permisele, licenţele si autorizatiile necesare pentru transportul mărfurilor, corespunzator legislatiei nationale şi să transporte mărfurile numai cu vehicule corespunzătoare;
+            </p>
+            <p>
+                6.1.9. Sa asigure pe toată durata contractului, mijloacele de transport necesare conform capacităţilor contractate, indiferent de momentul primirii comenzii din partea Beneficiarului;
+            </p>
+            <p>
+                6.1.10. Din momentul preluarii incarcaturii de transportat, TRANSPORTATORUL preia raspunderea materiala  totala pentru marfa transportata pana in momentul transmiterii la punctual de descarcare.Raspunderea Transportatorului pentru daunele ale marfiieste totala si nu depinde de cupla lui in sensul ca Transportatorul este respunzator din momentul preluarii marfii pana la momentul descarcarii acesteia, pe principiul riscului, inclusive pentru actiunile tertilor carora Transportatorul le incredinteaza realizarea transportului sau pentru circumstantele externe, independente de actiunile partilor sau tertilor. Diferenta constata lipsa, intre cantitatea incarcata si cea descarcata, se va imputa Transportatorului printr-o factura emisa de Beneficiar, la pretul de vanzare al produsului transportat raportat la cursul de referinta al BNR din data emiterii facturii.
+            </p>
+            <p>
+                6.1.11. Să remită Beneficiarului acele exemplare ale documentelor de transport pe care este obligat să le restituie acestuia.
+            </p>
+            <p>
+                6.1.13 La incheierea prezentului contract Transportatorul este obligat sa prezinte asigurare CMR valabila in cuantum total de minim 10.000 euro/ camion.
+            </p>
+            <p>
+                6.1.14 Transportatorul se obliga ca pe toata durata de valabilitate a prezentului contract sa respecte toate prevederile legale privind protectia mediului, a bunurilor si persoanelor.
+            </p>
+            <p>
+                6.1.15 Transportatorul are obligatia sa anunte cu minim 24 ore inainte, indisponibilitatea efectuarii curselor ( masini defecte, lipsa personal, etc). In cazul nerespectarii acestei obligatii, Beneficiarul isi rezerva dreptul de a prelungi corelativ indeplinirea obligatiilor sale de plata pana la data executarii integrale a obligatiilor de catre Transportator, precum si de a solicita Transportatorului daune interese compensatorii in cuantum de 5% din suma facturata in luna in care Transportatorul nu isi respecta obligatia asumata.
+            </p>
+            <p>
+                <b>6.2. <u>OBLIGATIILE BENEFICIARULUI</u></b>
+            </p>
+            <p>
+                6.2.1 Sa asigure confirmarea operativa a documentelor de transport emise de transportator in vederea facturarii prestatiilor.
+            </p>
+            <p>
+                6.2.2  Să achite contravaloarea transporturilor efectuate conform art.4.
+            </p>
+            <p>
+                6.2.3  Sa puna la dispozitia Transportatorului orice informatii sunt necesare in vederea incarcarii sau descarcarii marfurilor.
+            </p>
+            <p>
+                <b> Art.7. <u>RĂSPUNDEREA CONTRACTUALĂ</u></b>
+            </p>
+            <p>
+                7.1. Pentru neexecutarea contractului ori executarea cu întârziere sau necorespunzătoare, partea în culpă răspunde şi datorează daune-interese sau penalităţi. Beneficiarul răspunde doar pentru achitarea cu întârziere a facturilor, peste data scadentă.
+            </p>
+            <p>
+                <b>7.2. Răspunderea TRANSPORTATORULUI:</b>
+            </p>
+            <p>
+                7.2.1.	TRANSPORTATORUL răspunde pentru pierderea, alterarea sau deteriorarea bunurilor transportate, în conformitate cu dispoziţiile legale.
+            </p>
+            <p>
+                7.2.1. Pe lângă obligaţia de a transporta marfa la destinaţie, obligaţia prevăzută de art.6.1.7 este de asemenea o obligaţie esenţială a cărei nerespectare de către TRANSPORTATOR dă dreptul BENEFICIARULUI să rezilieze de îndată contractul, doar pe baza unei notificări, fără a mai fi necesară punerea în întârziere ori o altă formalitate prealabilă şi să solicite daune-interese.
+            </p>
+            <p>
+                7.2.2. În cazul în care TRANSPORTATORUL efectuează transportul cu vehicule necorespunzătoare şi din acest motiv se produc deteriorări/ alterări ale bunurilor sau chiar distrugerea totală a acestora, TRANSPORTATORUL este răspunzător pentru toate daunele produse BENEFICIARULUI precum şi pentru beneficiul nerealizat ca urmare a acestui fapt, acestă situaţie fiind considerată un caz de culpă gravă care atrage agravarea răspunderii prin raportare la dispoziţiile legale (art.1990 Cod civil).
+            </p>
+            <p>
+                7.2.3. TRANSPORTATORUL este unic şi direct răspunzător pentru încălcarea normelor menţionate la art.5.3., cu toate consecinţele ce decurg de aici. Nerespectarea acestei condiţii dă dreptul BENEFICIARULUI chiar să refuze plata şi primirea mărfii la destinaţie, precum şi să solicite despăgubiri aferente prejudiciului cauzat.
+            </p>
+            <p>
+                7.2.4  In cazul in care Transportatorul incheie un contract de transport cu Expeditorul sau Destinatarul Beneficiarului, fara acordul acestuia din urma, beneficiarul este indreptatit sa aplice Transportatorului penalitati in valoare de 50.000 euro si sa rezilieze prezentul contract.
+            </p>
+            <p>
+                <b>Art.8. <u>FORTA MAJORA</u></b>
+            </p>
+            <p>
+                8.1 Forţa majoră exonerează de răspundere partea care o invocă în condiţiile legale, dacă a fost notificată apariţia cazurilor de forta majora în termen de 48 de ore de la data producerii. Transportatorul este obligat să informeze în scris atât pe Beneficiar cât şi pe destinatarul mărfii cu privire la apariţia unei situaţii de forţă majoră şi să ia toate măsurile necesare limitării consecinţelor acesteia.
+            </p>
+            <p>
+                8.2. Partea care a invocat forta majora este obligata sa comunice, in scris, tot in 24 ore, incetarea cauzei care a generat forta majora.
+            </p>
+            <p>
+                <b>Art.9 <u>LITIGII</u></b>
+            </p>
+            <p>
+                9.1. Orice litigiu cu privire la executarea si interpretarea prezentului contract va fi solutionat pe cale amiabila.
+            </p>
+            <p>
+                9.2. Daca nu vor ajunge la nici o intelegere, părţile convin ca litigiul să fie solutionat de instantele competente din punct de vedere material şi teritorial de la sediul Beneficiarului, în conformitate cu art.126 din Noul Cod de Procedură Civilă.
+            </p>
+            <p>
+                Orice modificare a prezentului contract se va face prin acordul partilor si numai in baza unor
+            </p>
+            <p>
+                <b>Art.10. <u>DISPOZIŢII FINALE</u></b>
+            </p>
+            <p>
+                10.1. notificari scrise, care se vor finaliza printr-un act aditional modificator anexat prezentului contract.
+            </p>
+            <p>
+                10.2. BENEFICIARUL poate solicita încetarea contractului oricând pe durata acestuia, printr-o notificare scrisă, transmisă cu 10 de zile anterior datei încetării.
+            </p>
+            <p>
+                10.3. Părţile se obligă să-şi comunice reciproc orice modificare intervenită în structura lor (cum ar fi schimbarea denumirii, sediului, contului bancar etc.) şi care ar putea avea efect asupra obligaţiilor rezultate din prezentul contract. Comunicarea se va face în scris în termen de cel mult 15 zile de la intrarea în vigoare a modificării.
+            </p>
+            <p>
+                10.4 Toate informatiile si documentele furnizate de catre sau in numele Beneficiarului catre Transportator (sau reprezentantii acestuia) in legatura cu contractual de transport, cu locul de incarcare sic el de descarcare, cu pretul negociat vor fi pastrate de catre Parti confidential si nu vor fi folosite direct sau indirect pentru niciun alt scop concurential sau commercial decat cel expres agreat prin acest contract.
+            </p>
+            <p>
+                10.5. Prestatorul se obliga sa respecte drepturile de proprietate intelectuala ale Beneficiarului asupra know-how-ului si sa nu foloseasca in interes propriu si/sau sa nu le instraineze la terti, atat pe durata acestui contract, cat si ulterior.
+            </p>
+            <p>
+                In scopul protejarii know-how-ului, Prestatorull se obliga sa nu incheie un contract asemanator cu un tert cu care Beneficiarul se afla in relatii de concurenta ori sa nu desfasoare o activitate care se afla in concurenta cu cea desfasurata de acesta, si sa respecte regulile unei concurente loiale.
+            </p>
+            <p>
+                La incetarea relatiilor contractuale, relatiile postcontractuale se vor baza pe regulile unei concurente loiale. Prestatorul  se obliga sa nu permita utilizarea hnow-how-ului de catre o retea concurenta, dupa incetarea relatiilor contractuale.
+            </p>
+            <p>
+                Nerespectarea prezentului articol atrage dupa sine plata de dauna interese, in cuantum de 50.000 euro.
+            </p>
+            <p>
+                10.6 Partile declara, in temeiul art.1204 din Noul Cod de Procedura Civila, ca toate clauzele prezentului contract au fost negociate si agreate si sunt acceptate in mod expres prin semnarea prezentului contract.
+            </p>
+            <p>
+                10.7. Reprezentantii partilor, care au negociat, incheiat si semnat contractual in numele acestora declara ca au dreptul sa reprezinte partile si ca au luat la cunostiinta cu privire la dispozitiile art. 1310 Cod Civil si consecintele incalcarii puterilor de reprezentare.
+            </p>
+            <p>Prezentul contract s-a incheiat in doua exemplare originale, cate unul pentru fiecare parte.</p>
+        </div>
+        <br /><br />
+        <div class="row">
+            <div class="row">
+                <div class="col">
+                    <b>S.C. ADYRAL TRUCK SRL</b> <b style="margin-left: 400px !important;">@Model.Furnizor?.Nume.ToUpper()</b><br />
+                    <img src="~/images/semnatura5.png" style="max-width: 100px;max-height:100px;" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

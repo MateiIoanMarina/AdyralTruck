@@ -1,0 +1,208 @@
+﻿@using AdyralTruck.Model.ComandaTransport;
+@using AdyralTruck.Model.ContractTransport;
+@using AdyralTruck.Model.Furnizor;
+@model ComandaTransportViewModel
+
+
+@{
+    ViewData["Title"] = "Detalii Contract de Transport";
+    var comandaTransport = ViewData["ComandaTransport"] as ComandaTransportViewModel;
+    var contractTransport = comandaTransport?.ContractTransport;
+    var furnizor = contractTransport?.Furnizor as FurnizorViewModel;
+
+    var isUpdate = ViewData["IsUpdate"] as bool?;
+    var isSuccess = ViewData["IsSuccess"] as bool?;
+    var showSuccessUpdateMessage = isUpdate.HasValue && isUpdate is true && isSuccess.HasValue && isSuccess is true;
+    var showFailureUpdateMessage = isUpdate.HasValue && isUpdate is true && isSuccess.HasValue && isSuccess is false;
+
+    if (comandaTransport?.ComandaTransportId == Guid.Empty)
+    {
+        Model.ComandaTransportId = Guid.NewGuid();
+    }
+
+    if(comandaTransport != null && comandaTransport.ContractTransport == null)
+    {
+        comandaTransport.ContractTransport = contractTransport;
+    }
+}
+
+<style>
+    .errormsg {
+        color: red;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+</style>
+
+@if (showSuccessUpdateMessage)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Detaliile au fost actualizate cu succes.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (showFailureUpdateMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        Detaliile nu au putut fi actualizate, va rugam sa verificati ca ati completat toate casutele marcate cu <strong>*</strong> si sa reincercati.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (Model != null)
+{
+    @using (Html.BeginForm("EditeazaComandaTransport", "Home", FormMethod.Post))
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col-7">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="row"><h2 style="margin-left: -12px;">Adyral Truck S.R.L.</h2></div>
+                            <div class="row">Com. Nuci, sat Micsunesti-Moara, str. Viitorului, nr. 17, jud. Ilfov</div>
+                            <div class="row">CIF: RO 28758200</div>
+                            <div class="row">Reg. Com: J23/1764/2011</div>
+                            <div class="row">IBAN: RO48 INGB 0000 9999 0681 2454</div>
+                            <div class="row">BANCA: INB BANK NV</div>
+                            <div class="row">E-mail: adyraltruck@yahoo.com</div>
+                            <div class="row"><span style="margin-left: -12px;">Adresa Corespondenta: Sos. De Centura nr. 16, Com. Dobroesti, jud. Ilfov - <span style="font-weight: bold">PRIN CURIER</span></span></div>
+                            <div class="row">Tel: 0761.679.867</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1"></div>
+                
+                @if(comandaTransport != null)
+                {
+                    <div class="col float-end">
+                        <a class="btn btn-primary btn-sm"
+                           href="/Home/ComandaTransportPdfReportDownload?comandaTransportId=@comandaTransport?.ComandaTransportId.ToString()">
+                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                            PDF
+                        </a>
+
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="trimiteEmailFurnizor('@comandaTransport.ComandaTransportId.ToString()', '@furnizor?.FurnizorId.ToString()')">
+                            <i class="bi bi-envelope-at-fill"></i>
+                            Trimite Email
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <hr />
+
+            <br />
+
+            <div class="row">
+                <div class="col text-center">
+                    <strong>
+                        <span>
+                            CONTRACT DE TRANSPORT NR @(Html.TextBoxFor(m => m.NumarContract, new { @type = "number", @class = "form-control", @readonly = true })) @Html.ValidationMessageFor(m => m.NumarContract) 
+                            din @Html.EditorFor(m => m.DataContract, "ReadonlyDate") @Html.ValidationMessageFor(m => m.DataContract)
+                        </span>
+                    </strong>
+                    <br />
+                    <strong>
+                        COMANDA DE TRANSPORT NR.
+                        <span>@(Html.TextBoxFor(m => m.NumarComanda, new { @type = "number", @class = "form-control" })) @Html.ValidationMessageFor(m => m.NumarComanda)</span> din
+                        <span>@Html.EditorFor(m => m.DataComanda, "Date") @Html.ValidationMessageFor(m => m.DataComanda)</span>
+                    </strong>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <span>Catre,</span><br />
+                <span><strong>@contractTransport.Furnizor?.Nume</strong></span><br />
+                <span><strong>CIF: @contractTransport.Furnizor?.CIF</strong></span><br />
+                <span><strong>Reg. Com: @contractTransport.Furnizor?.NrRegistruComert</strong></span><br />
+                <span><strong>BANCA: @contractTransport.Furnizor?.NumeBanca</strong></span><br />
+                <span><strong>E-MAIL: @contractTransport.Furnizor?.Email</strong></span><br />
+                <span><strong>PERS. CONTACT: @contractTransport.Furnizor?.PersoanaContact</strong></span><br />
+
+                <span>
+                    Va rugam sa ne puneti la dispozitie
+                    <span>@(Html.TextBoxFor(m => m.NumarCamioane, new { @type = "number", @class = "form-control" })) @Html.ValidationMessageFor(m => m.NumarCamioane)</span>
+                    <span>@(Model.NumarCamioane > 1 ? "camioane" : "camion")</span> pentru efectuarea cursei de
+                    <strong>@(Html.TextBoxFor(m => m.ProdusTransportat, new { @class = "form-control" })) @Html.ValidationMessageFor(m => m.ProdusTransportat)</strong> pentru <strong>RUTA</strong>:
+                </span>
+
+                <span>@(Html.TextBoxFor(m => m.Ruta, new { @class = "form-control" })) @Html.ValidationMessageFor(m => m.Ruta)</span>
+                <span><strong>DATA INCARCARII: <span>@Html.EditorFor(m => m.DataIncarcare, "Date") @Html.ValidationMessageFor(m => m.DataIncarcare)</span></strong></span><br />
+                <span><strong>TARIF: <span>@(Html.TextBoxFor(m => m.Tarif, new { @type = "number", @min = "0", @step = "0.01", @class = "form-control" })) @Html.ValidationMessageFor(m => m.Tarif)</span> LEI + TVA/TONA</strong></span><br />
+                <span><strong>PLATA: <span>@(Html.TextBoxFor(m => m.DetaliiPlata, new { @class = "form-control" })) @Html.ValidationMessageFor(m => m.DetaliiPlata)</span></strong></span><br />
+                <p><strong>SE FACTUREAZA CANTITATEA <span>@(Html.TextBoxFor(m => m.TipCantitate, new { @class = "form-control" })) @Html.ValidationMessageFor(m => m.TipCantitate)</span> </strong></p><br />
+            </div>
+            <div class="row">
+                <span style="color: red;">
+                    <strong>
+                        OBS: CONDUCATORUL AUTO TREBUIE SA OPREASCA TICHETELE DE LA INCARCARE ( I SE VOR DA DOUA, DINTRE CARE ORIGINALUL VA AJUNGE LA SOCIETATEA NOASTRA, CAT SI TICHETUL DE LA DESCARCARE, SI CMR-UL IN ORIGINAL STAMPILAT.
+                    </strong>
+                </span>
+            </div>
+            <div class="row">
+                <span>Transportul se executa pe baza conventiei CMR, asigurare CMR valabila pe intreg parcursul tranportului, in cuantum de 20.000 euro.</span>
+                <span>Prezenta comanda este considerata acceptata fara rezerve, daca nu este refuzata in scris in termen de 1h de la primirea ei.</span>
+                <span>Transportatorul se obliga sa pastreze pe intreaga durata a executarii transportului, precum si dupa incetarea acestuia, confidentialitatea datelor si informatiilor cu care intra in contact.</span>
+                <span>In calitate de caraus aveti obligatia: sa verificati, atat la incarcare, cat si la descarcare, cantitatea si calitatea marfii, care trebuie sa coincida cu datele mentionate in documente, respectiv CMR, AVIZ INSOTIRE A MARFII, TICHET DE CANTAR.</span>
+                <span>Transportatorul este direct raspunzator pentru deteriorare/distrugerea/pierderea/furtul marfii pe durata transportului.</span>
+                <span>Este interzisa transportarea marfii fara acordul nostru si fara a avea motive intemeiate in acest sens.</span>
+                <span>Plata facturii se va face la data primirii documentelor in original.( scrisoare CMR, tichete de cantar, aviz ).</span>
+                <span>Vehiculul utilizat trebuie sa fie in stare tehnica buna, curat, echipat corespunzator, pentru a asigura marfa in timpul tranportului.</span>
+                <span><strong>Va rugam sa transmiteti urmatoarele:</strong></span>
+                <span><strong>Licenta de transport a societatii.</strong></span>
+                <span><strong>Licenta de transport auto.</strong></span>
+                <span><strong>Autorizatia sanitar- veterinara.</strong></span>
+                <span><strong>Asigurarea cmr - dovada valabilitate.</strong></span>
+                <br />
+                <span><strong>Va rugam sa ne comunicati atat in comanda cat si la nr de tel. 0761.679.867.</strong></span>
+                <span><strong>Detalii sofer: <span>@(Html.TextAreaFor(m => m.DetaliiSofer, new { @class = "form-control", @rows=3 })) @Html.ValidationMessageFor(m => m.DetaliiSofer)</span></strong></span>
+                <span><strong>Coordonate gps incarcare - descarcare: </strong></span>
+                <span><strong>Interdictii locatii conducator auto: </strong></span>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-sm">
+                    <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-sm btn-success" value="Salveaza" />
+                </div>
+            </div>
+        </div>
+
+        @Html.HiddenFor(m => m.ComandaTransportId)
+        @Html.HiddenFor(m => m.ContractTransportId)
+    }
+}
+
+@section Scripts {
+    <script>
+        function trimiteEmailFurnizor(comandaTransportId, furnizorId) {
+            if (furnizorId) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    traditional: true,
+                    url: '@Url.Action("TrimiteContractTransportEmail", "Home")',
+                    data: {
+                        comandaTransportId: comandaTransportId,
+                        furnizorId: furnizorId
+                    },
+                    success: function () {
+                        alert('Emailul a fost trimis cu success.')
+                    },
+                    error: function () {
+                        alert('Emailul nu a fost trimis cu success. Va rugam reincercati trimiterea acestuia.')
+                    },
+                });
+            }
+        }
+
+    </script>
+}
