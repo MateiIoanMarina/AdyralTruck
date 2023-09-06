@@ -4,6 +4,97 @@
     var furnizori = ViewData["Furnizori"] as List<FurnizorViewModel>;
 }
 
+<style>
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        .cautare{
+            width: 300px !important;
+        }
+    }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+            white-space: initial;
+            min-height: 40px;
+            padding-top: 15px !important;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: -2px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+            /*
+                        Label the data
+                    You could also use a data-* attribute and content for this. That way "bloats" the HTML, this way means you need to keep HTML and CSS in sync. Lea Verou has a clever way to handle with text-shadow.
+                        */
+            td:nth-of-type(1):before {
+                content: "Nume";
+            }
+
+            td:nth-of-type(2):before {
+                content: "CIF";
+            }
+
+            td:nth-of-type(3):before {
+                content: "Reg. Comert";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Banca";
+            }
+
+            td:nth-of-type(5):before {
+                content: "Email";
+            }
+
+            td:nth-of-type(6):before {
+                content: "Pers. Contact";
+            }
+
+            td:nth-of-type(7):before {
+                content: "Telefon";
+            }
+
+            td:nth-of-type(8):before {
+                content: "Adresa";
+            }
+
+            td:nth-of-type(9):before {
+                content: "Nr. Contract";
+            }
+    }
+</style>
+
 <div class="row text-center">
     <div class="col-sm">
         <h1>Furnizori</h1>
@@ -18,7 +109,7 @@
         <div class="row">
             <div class="col">
                 <label>Cautare dupa Nume/Email:</label>
-                <input class="form-control" style="width:400px;margin-bottom:10px;" type="text" id="search" />
+                <input class="form-control cautare" style="width:400px;margin-bottom:10px;" type="text" id="search" />
                 <button class="btn btn-secondary btn-sm" onclick="cauta()" type="button">Cautare</button>
                 <button class="btn btn-secondary btn-sm" onclick="clearSearch()" type="button">Arata toti Furnizorii</button>
             </div>
@@ -30,16 +121,17 @@
     <br/>
     <table class="table table-responsive">
         <thead>
-            <tr style="font-weight: bold;">
-                <th scope="col">Nume</th>
-                <th scope="col">CIF</th>
-                <th scope="col">Nr. Reg. Comert</th>
-                <th scope="col">Banca</th>
-                <th scope="col">E-mail</th>
-                <th scope="col">Persoana Contact</th>
-                <th scope="col">Nr. Tel</th>
-                <th scope="col">Adresa</th>
-                <th scope="col"></th>
+            <tr role="row" style="font-weight: bold;">
+                <th role="columnheader" scope="col">Nume</th>
+                <th role="columnheader" scope="col">CIF</th>
+                <th role="columnheader" scope="col">Nr. Reg. Comert</th>
+                <th role="columnheader" scope="col">Banca</th>
+                <th role="columnheader" scope="col">E-mail</th>
+                <th role="columnheader" scope="col">Persoana Contact</th>
+                <th role="columnheader" scope="col">Nr. Tel</th>
+                <th role="columnheader" scope="col">Adresa</th>
+                <th role="columnheader" scope="col">Nr. Contract</th>
+                <th role="columnheader" scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -47,16 +139,17 @@
             {
                 foreach (var furnizor in furnizori)
                 {
-                    <tr class="row-click">
-                        <th onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')" scope="row">@furnizor.Nume</th>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.CIF</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NrRegistruComert</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumeBanca</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.Email</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.PersoanaContact</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumarTelefon</td>
-                        <td onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.AdresaCorespondenta</td>
-                        <td>
+                    <tr role="row" class="row-click">
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')" scope="row">@furnizor.Nume</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.CIF</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NrRegistruComert</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumeBanca</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.Email</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.PersoanaContact</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.NumarTelefon</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@furnizor.AdresaCorespondenta</td>
+                        <td role="cell" onclick="navigateToFurnizorDetailsPage('@furnizor.FurnizorId.ToString()')">@(furnizor.NumarContract.HasValue ? furnizor.NumarContract.Value.ToString() : "")</td>
+                        <td role="cell">
                             <button class="btn btn-primary btn-sm btn-danger" onclick="stergeFurnizor(this, '@furnizor.FurnizorId.ToString()')">
                                 Sterge
                             </button>

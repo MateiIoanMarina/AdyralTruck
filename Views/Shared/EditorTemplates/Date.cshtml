@@ -1,4 +1,4 @@
 ﻿@model DateTime?
 
-@Html.TextBoxFor(m => m, Model.HasValue ? Model.Value.ToString("dd.MM.yyyy") : string.Empty,
+@Html.TextBoxFor(m => m, Model.HasValue ? Model.Value.ToString("MM.dd.yyyy") : string.Empty,
     new { data_datepicker = true, @class = "form-control" })

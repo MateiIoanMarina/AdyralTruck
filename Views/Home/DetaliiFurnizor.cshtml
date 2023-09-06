@@ -31,6 +31,75 @@
         z-index: -1;
         top: 0;
     }
+
+    @@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+        
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
+        }
+            /* Hide table headers (but not display: none;, for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+        tr {
+            margin: 0 0 1rem 0;
+        }
+
+            tr:nth-child(odd) {
+                background: #ccc;
+            }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+            white-space: initial;
+            min-height: 40px;
+            padding-top: 15px !important;
+        }
+
+            td:before {
+                /* Now like a table header */
+                position: absolute;
+                /* Top/left values mimic padding */
+                top: -2px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            /*
+                    Label the data
+                You could also use a data-* attribute and content for this. That way "bloats" the HTML, this way means you need to keep HTML and CSS in sync. Lea Verou has a clever way to handle with text-shadow.
+                    */
+            td:nth-of-type(1):before {
+                content: "Furnizor";
+            }
+
+            td:nth-of-type(2):before {
+                content: "Nr. Contract";
+            }
+
+            td:nth-of-type(3):before {
+                content: "Data Contract";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Data Expirare";
+            }
+
+            td:nth-of-type(5):before {
+                content: "Activ";
+            }
+    }
 </style>
 
 @if (showSuccessUpdateMessage)
@@ -54,6 +123,12 @@
 
     <div class="card">
         <div class="card-body">
+            <div>
+                <button type="button" class="btn btn-primary btn-sm" style="margin:10px;margin-left: 0px;"
+                        onclick="navigateToFurnizori()">
+                    <span class="bi-arrow-left" style="margin-right: 5px;"></span>Inapoi la Furnizori
+                </button>
+            </div>
             <h5 class="card-title">Detalii Furnizor - @furnizor?.Nume</h5>
             <h6 class="card-subtitle mb-2 text-muted">Pentru a edita detaliile furnizorului, toate casutele marcate cu <strong>*</strong> trebuie sa fie completate.</h6>
             <p class="card-text">
@@ -131,21 +206,22 @@
     <div class="card-body">
         <h5 class="card-title">
             Contracte de Transport
-            <button class="btn btn-primary btn-sm float-end" onclick="adaugaContractTransport('@furnizor?.FurnizorId.ToString()')">Adauga Contract de Transport</button>
+            <button class="btn btn-primary btn-sm float-end" onclick="adaugaContractTransport('@furnizor?.FurnizorId.ToString()')">Adauga Contract</button>
         </h5>
         <br />
         <p class="card-text">
             <div class="row" style="overflow-x: auto;">
                 <table class="table table-responsive" style="overflow-x: auto; white-space: nowrap;">
                     <thead>
-                        <tr style="font-weight: bold;">
-                            <th scope="col">Furnizor</th>
-                            <th scope="col">Nr. Contract</th>
-                            <th scope="col">Data Contract</th>
-                            <th scope="col">Data Expirare</th>
-                            <th scope="col">Activ</th>
-                            <th scope="col" class="stickyCell" style="position: sticky;right:90px;border-bottom-width: 0px;"></th>
-                            <th scope="col" class="stickyCell" style="position: sticky;right:0;border-bottom-width: 0px;"></th>
+                        <tr role="row" style="font-weight: bold;">
+                            <th role="columnheader" scope="col">Furnizor</th>
+                            <th role="columnheader" scope="col">Nr. Contract</th>
+                            <th role="columnheader" scope="col">Data Contract</th>
+                            <th role="columnheader" scope="col">Data Expirare</th>
+                            <th role="columnheader" scope="col">Activ</th>
+                            <th role="columnheader" scope="col">Email Trimis ?</th>
+                            <th role="columnheader" scope="col" class="stickyCell" style="position: sticky;right:90px;border-bottom-width: 0px;"></th>
+                            <th role="columnheader" scope="col" class="stickyCell" style="position: sticky;right:0;border-bottom-width: 0px;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -153,10 +229,10 @@
                         {
                             foreach (var contractTransport in contracteDeTransport)
                             {
-                                <tr class="row-click">
-                                    <th style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" scope="row" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                <tr role="row" class="row-click">
+                                    <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
                                         @contractTransport.Furnizor?.Nume
-                                    </th>
+                                    </td>
                                     <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
                                         @contractTransport.NumarContract
                                     </td>
@@ -169,11 +245,20 @@
                                     <td style="background-color:@(contractTransport.Inactiv ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
                                         @(contractTransport.Inactiv ? "Nu" : "Da")
                                     </td>
+                                    <td style="background-color:@(!contractTransport.EmailTrimisFurnizor ? "#FFCCCB" : "#90EE90")" onclick="navigateToContractTransportDetailsPage('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
+                                        @(contractTransport.EmailTrimisFurnizor ? "Da" : "Nu")
+                                    </td>
                                     <td style="position: sticky;right:90px;background-color: white !important;">
                                         <a class="btn btn-sm btn-primary" href="/Home/ContractTransportPdfReportDownload?contractTransportId=@contractTransport.ContractTransportId.ToString()">
                                             <i class="bi bi-cloud-arrow-down-fill"></i>
                                             PDF
                                         </a>
+                                    </td>
+                                    <td role="cell" style="position: sticky;right:90px;background-color:rgba(0, 0, 0, 0) !important;">
+                                        <button class="btn btn-sm btn-secondary" onclick="trimiteEmailFurnizor('@contractTransport.ContractTransportId.ToString()', '@contractTransport?.FurnizorId.ToString()', '@contractTransport.EmailTrimisFurnizor.ToString()')">
+                                            <i class="bi bi-envelope-at-fill"></i>
+                                            Email
+                                        </button>
                                     </td>
                                     <td style="position: sticky;right:0px;background-color: white !important;">
                                         <button class="btn btn-sm btn-danger" role="button" onclick="stergeContractTransport('@furnizor?.FurnizorId.ToString()', '@contractTransport.ContractTransportId.ToString()')">
@@ -203,6 +288,48 @@
 
         });
 
+        function trimiteEmailFurnizor(contractTransportId, furnizorId, emailTrimis) {
+            if (furnizorId) {
+                if (emailTrimis === "True") {
+                    if (confirm("Acest Contract de Transport a fost deja trimis pe Email la Furnizor. Sunteti sigur(a) ca doriti sa il retrimiteti ?")) {
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            traditional: true,
+                            url: '@Url.Action("TrimiteDoarContractTransportEmail", "Home")',
+                            data: {
+                                contractTransportId: contractTransportId,
+                                furnizorId: furnizorId
+                            },
+                            success: function () {
+                                alert('Emailul a fost trimis cu success.')
+                            },
+                            error: function () {
+                                alert('Emailul nu a fost trimis cu success. Va rugam reincercati trimiterea acestuia.')
+                            },
+                        });
+                    }
+                } else {
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        traditional: true,
+                        url: '@Url.Action("TrimiteDoarContractTransportEmail", "Home")',
+                        data: {
+                            contractTransportId: contractTransportId,
+                            furnizorId: furnizorId
+                        },
+                        success: function () {
+                            alert('Emailul a fost trimis cu success.')
+                        },
+                        error: function () {
+                            alert('Emailul nu a fost trimis cu success. Va rugam reincercati trimiterea acestuia.')
+                        },
+                    });
+                }
+            }
+        }
+
         function navigateToContractTransportDetailsPage(furnizorId, contractTransportId) {
             var link = `/Home/DetaliiContractTransport?furnizorId=-2&contractTransportId=-1`;
             link = link.replace("-1", contractTransportId);
@@ -225,5 +352,11 @@
                 window.location.href = link;
             }
         }
+
+        function navigateToFurnizori() {
+            var link = `/Home/Index`;
+            window.location.href = link;
+        }
+
     </script>
 }

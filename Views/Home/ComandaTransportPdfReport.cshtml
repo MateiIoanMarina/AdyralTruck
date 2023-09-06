@@ -40,7 +40,6 @@
                 </b><br />
             </div>
         </div>
-        <br />
         <div class="row">
             <span>Catre,</span><br />
             <span><b>@Model.ContractTransport.Furnizor?.Nume</b></span><br />
@@ -49,41 +48,63 @@
             <span><b>BANCA:</b> @Model.ContractTransport.Furnizor?.NumeBanca</span><br />
             <span><b>E-MAIL:</b> @Model.ContractTransport.Furnizor?.Email</span><br />
             <span><b>PERS. CONTACT:</b> @Model.ContractTransport.Furnizor?.PersoanaContact</span><br />
-            <span>Va rugam sa ne puneti la dispozitie <span>@Model.NumarCamioane.ToString()</span> <span>@(Model.NumarCamioane > 1 ? "camioane" : "camion")</span> pentru efectuarea cursei de <b>@Model.ProdusTransportat.ToUpper()</b> pentru </span>
+            <span>Va rugam sa ne puneti la dispozitie 
+                <span>@Model.NumarCamioane.ToString()</span> <span>@(Model.NumarCamioane > 1 ? "camioane" : "camion")</span> 
+                pentru efectuarea unui numar de @Model.NumarCurse.ToString() curse de <b>@Model.ProdusTransportat.ToUpper()</b> pentru </span>
             <span><b>RUTA:</b> <span>@Model.Ruta</span>.</span><br />
             <span><b>DATA INCARCARII:</b> <span>@Model.DataIncarcare.ToString("dd.MM.yyyy")</span></span><br />
             <span><b>TARIF:</b> <strong style="font-size: 18px;">@Model.Tarif LEI + TVA/TONA</strong> </span><br />
             <span><b>PLATA:</b> <strong style="font-size: 18px;">@Model.DetaliiPlata</strong> </span><br />
-            <span>SE FACTUREAZA CANTITATEA <b>@Model.TipCantitate.ToUpper()</b></span><br /><br />
+            <span>SE FACTUREAZA CANTITATEA <b>@Model.TipCantitate.ToUpper()</b></span><br />
         </div>
         <div class="row">
-            <p style="color: red;">
+            <span style="color: red;">
                 <b>
                     OBS: CONDUCATORUL AUTO TREBUIE SA OPREASCA TICHETELE DE LA INCARCARE - I SE VOR DA DOUA, DINTRE CARE ORIGINALUL VA AJUNGE LA SOCIETATEA NOASTRA, CAT SI TICHETUL DE LA DESCARCARE, SI CMR-UL IN ORIGINAL STAMPILAT.
                 </b>
-            </p>
+            </span>
         </div>
         <div class="row" style="border: none;">
             <span>Transportul se executa pe baza conventiei CMR, asigurare CMR valabila pe intreg parcursul tranportului, in cuantum de 20.000 euro.</span><br />
-            <span>Prezenta comanda este considerata acceptata fara rezerve, daca nu este refuzata in scris in termen de 1h de la primirea ei.</span><br />
             <span>Transportatorul se obliga sa pastreze pe intreaga durata a executarii transportului, precum si dupa incetarea acestuia, confidentialitatea datelor si informatiilor cu care intra in contact.</span><br />
             <span>In calitate de caraus aveti obligatia: sa verificati, atat la incarcare, cat si la descarcare, cantitatea si calitatea marfii, care trebuie sa coincida cu datele mentionate in documente, respectiv CMR, AVIZ INSOTIRE A MARFII, TICHET DE CANTAR.</span><br />
             <span>Transportatorul este direct raspunzator pentru deteriorare/distrugerea/pierderea/furtul marfii pe durata transportului.</span><br />
             <span>Este interzisa transportarea marfii fara acordul nostru si fara a avea motive intemeiate in acest sens.</span><br />
             <span>Plata facturii se va face la data primirii documentelor in original.( scrisoare CMR, tichete de cantar, aviz ).</span><br />
-            <span>Vehiculul utilizat trebuie sa fie in stare tehnica buna, curat, echipat corespunzator, pentru a asigura marfa in timpul tranportului.</span><br /><br />
+            <span>Vehiculul utilizat trebuie sa fie in stare tehnica buna, curat, echipat corespunzator, pentru a asigura marfa in timpul tranportului.</span><br />
+            <span><b>Neconfirmarea comenzii in termen de 1 ora pe e-mail dar totusi efectuarea transportului, inseamna acceptul clar si fara echivoc al conditiilor acestei comenzi de catre transportator.</b></span><br/>
+            <span><b>In cazul in care masina confirmata nu ajunge la locul incarcarii transportatorul se obliga sa plateasca o dauna de 100 de euro.</b></span><br />
+            <span><b>Se accepta diferente marfa +/- @Model.CantitateLipsa kg/cursa, ce depaseste se imputa cu suma aferenta produsului.</b></span><br />
+            <span>
+                <b>
+                    Transportul conform prezentei comenzi se desfasoara sub incidenta Codului Comercial.
+                </b>
+            </span><br />
+            <span>
+                <b>
+                    Partile convin ca orice neintelegeri care izvorasc din derularea prezentei comenzi/contract sunt de competenta instantei unde isi are sediul CASA DE
+                    EXPEDITII.
+                </b>
+            </span><br />
+            <span>
+                <b>
+                    Daca TRANSPORTATORUL intervine in relatia BENEFICIAR-CASA DE EXPEDITII altfel decat pentru derularea in bune conditii a transportului
+                    contractat prin prezenta COMANDA, CASA DE EXPEDITII poate pretinde daune morale in suma de 100 000 euro.
+                </b>
+            </span><br />
+            <span>
+                <b>
+                    Prin confirmarea prezentei comenzi TRANSPORTATORUL atesta astfel ca a fost agreata si prevederile acesteia sunt acceptate si recunoscute de
+                    parti, reprezentand vointa acestora.
+                </b>
+            </span><br />
             <span><b>Va rugam sa transmiteti urmatoarele:</b></span><br />
-            <span><b>Licenta de transport a societatii.</b></span><br />
-            <span><b>Licenta de transport auto.</b></span><br />
-            <span><b>Autorizatia sanitar - veterinara.</b></span><br />
-            <span><b>Asigurarea cmr - dovada valabilitate.</b></span><br />
+            <span><b>Licenta de transport a societatii si licenta de transport auto, Autorizatia sanitar - veterinara, Asigurarea cmr - dovada valabilitate.</b></span><br />
             <span><b>Va rugam sa ne comunicati atat in comanda cat si la nr de tel. 0761.679.867.</b></span><br />
-            <span><b>Nume sofer:</b> <span>@Model.DetaliiSofer</span></span><br />
+            <span><b>Nume sofer:</b><br/> <span>@Html.Raw(Model.DetaliiSofer.Replace(System.Environment.NewLine, "<br />").Replace("\n", @"<br />"))</span></span><br />
             <span><b>Coordonate gps incarcare- descarcare: </b></span><br />
-            <span><b>Interdictii locatii conducator auto: </b></span><br />
         </div>
-        <br /> <br />
-        <br /> <br />
+        <br />
         <div class="container">
             <div class="row">
                 <div class="col">
