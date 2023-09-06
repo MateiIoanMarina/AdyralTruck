@@ -347,7 +347,10 @@ namespace AdyralTruck.Controllers
 
                 await dataContext.SaveChangesAsync(true);
 
-                var previousContractTransports = await dataContext.ContracteTransport.Where(w => !w.Sters && !w.Inactiv && w.ContractTransportId != item.ContractTransportId).ToListAsync();
+                var previousContractTransports = await dataContext.ContracteTransport
+                    .Where(w => !w.Sters && !w.Inactiv && w.FurnizorId == model.FurnizorId && w.ContractTransportId != item.ContractTransportId)
+                    .ToListAsync();
+
                 if (previousContractTransports.Any())
                 {
                     previousContractTransports.ForEach(f => f.Inactiv = true);
