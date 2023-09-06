@@ -118,7 +118,7 @@
     </div>
 }
 
-@using (Html.BeginForm("EditeazaFurnizor", "Home", FormMethod.Post))
+@using (Html.BeginForm("EditeazaFurnizor", "Home", FormMethod.Post, new { @furnizorId = furnizor?.FurnizorId.ToString() }))
 {
 
     <div class="card">

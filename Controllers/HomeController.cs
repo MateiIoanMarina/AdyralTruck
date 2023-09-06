@@ -139,39 +139,32 @@ namespace AdyralTruck.Controllers
             dataContext.Add(item);
             dataContext.SaveChanges(true);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("DetaliiFurnizor", new { @furnizorId = item.FurnizorId });
         }
 
         [HttpPost]
-        public ActionResult EditeazaFurnizor(FurnizorViewModel model)
+        public ActionResult EditeazaFurnizor(Guid furnizorId, FurnizorUpdateViewModel model)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            //if(model.ContracteTransport)
-
-            if (ModelState["ContracteTransport"] != null) ModelState["ContracteTransport"].ValidationState = Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Valid;
+            if(furnizorId == Guid.Empty)
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("DetaliiFurnizor", new { @furnizorId = model.FurnizorId, @isUpdate = true });
+                return RedirectToAction("DetaliiFurnizor", new { @furnizorId = furnizorId, @isUpdate = true });
             }
 
-            var item = dataContext.Furnizori.Include(x => x.ContracteTransport).FirstOrDefault(q => q.FurnizorId == model.FurnizorId);
+            var item = dataContext.Furnizori.FirstOrDefault(q => q.FurnizorId == furnizorId);
 
             if (item == null)
             {
-                return RedirectToAction("DetaliiFurnizor", new { @furnizorId = model.FurnizorId });
-            }
-
-            if(model.ContracteTransport == null || !model.ContracteTransport.Any())
-            {
-                if(item.ContracteTransport != null && item.ContracteTransport.Any())
-                {
-                    model.ContracteTransport = item.ContracteTransport.Select(s => mapper.Map<ContractTransportViewModel>(s)).ToList();
-                }
+                return RedirectToAction("DetaliiFurnizor", new { @furnizorId = furnizorId });
             }
 
             item = mapper.Map(model, item);
@@ -179,7 +172,7 @@ namespace AdyralTruck.Controllers
             dataContext.Update(item);
             dataContext.SaveChanges(true);
 
-            return RedirectToAction("DetaliiFurnizor", new { @furnizorId = model.FurnizorId, @isUpdate = true, @isSuccess = true });
+            return RedirectToAction("DetaliiFurnizor", new { @furnizorId = furnizorId, @isUpdate = true, @isSuccess = true });
         }
 
         #endregion
@@ -354,7 +347,7 @@ namespace AdyralTruck.Controllers
 
                 await dataContext.SaveChangesAsync(true);
 
-                var previousContractTransports = await dataContext.ContracteTransport.Where(w => !w.Inactiv && w.ContractTransportId != item.ContractTransportId).ToListAsync();
+                var previousContractTransports = await dataContext.ContracteTransport.Where(w => !w.Sters && !w.Inactiv && w.ContractTransportId != item.ContractTransportId).ToListAsync();
                 if (previousContractTransports.Any())
                 {
                     previousContractTransports.ForEach(f => f.Inactiv = true);
@@ -703,6 +696,7 @@ namespace AdyralTruck.Controllers
                 model.Furnizor?.Email);
 
             contractTransport.EmailTrimisFurnizor = true;
+            contractTransport.Inactiv = false;
             dataContext.ContracteTransport.Update(contractTransport);
             await dataContext.SaveChangesAsync(true);
 
