@@ -14,7 +14,7 @@ builder.Services.AddDbContext<DataContext>(cfg =>
 {
     //Server=(local);Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True
     //Server=WIN-1BE6D6M2J9M\\SQLEXPRESS;Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True
-    cfg.UseSqlServer("Server=(local);Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+    cfg.UseSqlServer("Server=WIN-1BE6D6M2J9M\\SQLEXPRESS;Initial Catalog=AdyralTruck;Integrated Security=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

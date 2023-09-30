@@ -5,14 +5,31 @@ namespace AdyralTruck.Utility
 {
     public class EmailUtility
     {
-        public static async Task SendEmail(string html, string subject, string base64, string fileName, string contractBase64, string contractFileName, string emailAddress)
+        public static async Task SendEmail(
+            string html, 
+            string subject,
+            string base64, 
+            string fileName, 
+            string contractBase64,
+            string contractFileName,
+            string emailAddress,
+            bool contractDejaTrimis)
         {
+
+            var attachments = new List<Attachment>();
+            attachments.Add(new Attachment(fileName, "application/pdf", base64));
+
+            if (!contractDejaTrimis)
+            {
+                attachments.Add(new Attachment(contractFileName, "application/pdf", contractBase64));
+            }
+
             var email = new TransactionalEmailBuilder()
                 .WithFrom(new SendContact("logistica.adyraltruck@gmail.com"))
                 .WithSubject(subject)
                 .WithHtmlPart($"{html}")
                 .WithTo(new SendContact[] { new SendContact(emailAddress) })
-                .WithAttachments(new Attachment[] { new Attachment(fileName, "application/pdf", base64), new Attachment(contractFileName, "application/pdf", contractBase64) })
+                .WithAttachments(attachments)
                 .WithBcc(new SendContact[] { new SendContact("logistica.adyraltruck@gmail.com"), new SendContact("i.marina.16@aberdeen.ac.uk") })
                 .Build();
 
@@ -23,7 +40,15 @@ namespace AdyralTruck.Utility
             var response = await smsClient.SendTransactionalEmailAsync(email);
         }
 
-        public static async Task SendEmailuri(string html, string subject, List<string> base64s, string fileName, string contractBase64, string contractFileName, string emailAddress)
+        public static async Task SendEmailuri(
+            string html, 
+            string subject, 
+            List<string> base64s, 
+            string fileName, 
+            string contractBase64, 
+            string contractFileName, 
+            string emailAddress,
+            bool eContractDejaTrimis)
         {
             var attachments = new List<Attachment>();
 
@@ -32,7 +57,10 @@ namespace AdyralTruck.Utility
                 attachments.Add(new Attachment(fileName, "application/pdf", base64));
             }
 
-            attachments.Add(new Attachment(contractFileName, "application/pdf", contractBase64));
+            if (!eContractDejaTrimis)
+            {
+                attachments.Add(new Attachment(contractFileName, "application/pdf", contractBase64));
+            }
 
             var email = new TransactionalEmailBuilder()
                 .WithFrom(new SendContact("logistica.adyraltruck@gmail.com"))

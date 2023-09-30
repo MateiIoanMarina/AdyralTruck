@@ -53,7 +53,7 @@
                 pentru efectuarea unui numar de @Model.NumarCurse.ToString() curse de <b>@Model.ProdusTransportat.ToUpper()</b> pentru </span>
             <span><b>RUTA:</b> <span>@Model.Ruta</span>.</span><br />
             <span><b>DATA INCARCARII:</b> <span>@Model.DataIncarcare.ToString("dd.MM.yyyy")</span></span><br />
-            <span><b>TARIF:</b> <strong style="font-size: 18px;">@Model.Tarif LEI + TVA/TONA</strong> </span><br />
+            <span><b>TARIF:</b> <strong style="font-size: 18px;">@Model.Tarif LEI + TVA/@(!string.IsNullOrWhiteSpace(Model.TipTonaj) ? Model.TipTonaj : "TONA")</strong> </span><br />
             <span><b>PLATA:</b> <strong style="font-size: 18px;">@Model.DetaliiPlata</strong> </span><br />
             <span>SE FACTUREAZA CANTITATEA <b>@Model.TipCantitate.ToUpper()</b></span><br />
         </div>

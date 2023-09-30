@@ -17,10 +17,20 @@
 
 @{
     ViewData["Title"] = "Furnizor Nou";
+    var list = ViewData["listaEmailuri"];
+    var emailExists = ViewData["EmailExists"];
 }
 <h1 class="text-center">@ViewData["Title"]</h1>
 
 <p class="text-center">Completati toate campurile de mai jos marcate cu <strong style="color: red;">*</strong></p>
+
+@if (emailExists != null && emailExists is string)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        Aceasta adresa de e-mail este deja folosita pentru un alt furnizor. Va rugam introduceti alta adresa de e-mail.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 @using (Html.BeginForm("AdaugaFurnizor", "Home", FormMethod.Post))
 {
@@ -40,8 +50,12 @@
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.Email, "Email *")
-                    @Html.TextBoxFor(m => m.Email, "", new { style = "width: 100%;", type = "email", @class="form-control" })
+                    @Html.TextBoxFor(m => m.Email, "",
+                            new { style = "width: 100%;", type = "email", @class="form-control" ,
+                            @onkeyup = "onchangeevent();", @id="emailBox"
+                            })
                     @Html.ValidationMessageFor(m => m.Email, "", new { @class = "errormsg" })
+                    <span id="emailSpan" style="color:red;"></span>
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.PersoanaContact, "Persoana Contact")
@@ -83,6 +97,37 @@
             </div>
         </div>
     </div>
+}
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+        });
+
+        function onchangeevent() {
+            if(movies && movies.length){
+                var val = $('#emailBox').val();
+
+                if(!val){
+
+                    $("#emailSpan").html('');
+
+                    return;
+                }
+
+                var emailuriExistente = movies.filter(movie => movie.includes(val));
+
+                if(emailuriExistente && emailuriExistente.length){
+                    $("#emailSpan").html(`Emailuri deja existente in sistem: `);
+                    emailuriExistente.map(item => $("#emailSpan").append(`<li>${item}</li>`));
+                }
+            }
+        }
+
+        var movies = @Html.Raw(Json.Serialize(list));
+        console.log(movies);
+    </script>
 }
 
 

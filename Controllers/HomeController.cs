@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using AdyralTruck.Model.ComandaTransport;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using AdyralTruck.Controllers.Extensions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AdyralTruck.Controllers
 {
@@ -59,12 +61,15 @@ namespace AdyralTruck.Controllers
             return View();
         }
 
-        public IActionResult AdaugaFurnizor()
+        public async Task<IActionResult> AdaugaFurnizor()
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
+
+            var listaEmailuri = await dataContext.Furnizori.Select(s => s.Email).Distinct().ToListAsync();
+            ViewData["listaEmailuri"] = listaEmailuri;
 
             return View();
         }
@@ -123,7 +128,7 @@ namespace AdyralTruck.Controllers
         }
 
         [HttpPost]
-        public ActionResult AdaugaFurnizor(FurnizorUpdateViewModel model)
+        public IActionResult AdaugaFurnizor(FurnizorUpdateViewModel model)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
@@ -133,6 +138,18 @@ namespace AdyralTruck.Controllers
             if (!ModelState.IsValid)
             {
                 return View(model);
+            }
+
+            var listaEmailuri = dataContext.Furnizori.Select(s => s.Email).Distinct().ToList();
+            ViewData["listaEmailuri"] = listaEmailuri;
+
+            if (listaEmailuri != null && listaEmailuri.Count > 0)
+            {
+                if (listaEmailuri.Contains(model.Email))
+                {
+                    ViewData["EmailExists"] = $"Aceasta adresa de e-mail {model.Email} este deja folosita pentru alt furnizor.";
+                    return View(model);
+                }
             }
 
             var item = mapper.Map<Furnizor>(model);
@@ -179,14 +196,33 @@ namespace AdyralTruck.Controllers
 
         #region Comenzi de Transport
 
-        public async Task<IActionResult> DetaliiComandaTransportAsync(Guid contractTransportId, Guid? comandaTransportId = null, bool isUpdate = false, bool isSuccess = false)
+        public async Task<IActionResult> DetaliiComandaTransportAsync(
+            Guid contractTransportId, 
+            Guid? comandaTransportId = null,
+            bool isUpdate = false,
+            bool isSuccess = false,
+            string existingModelString = null)
         {
             if (!HttpContext.User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            if (comandaTransportId.HasValue && comandaTransportId.Value != Guid.Empty)
+            ComandaTransportViewModel? existingModel = null;
+
+            if(!string.IsNullOrWhiteSpace(existingModelString))
+            {
+                existingModel = JsonSerializer.Deserialize<ComandaTransportViewModel>(existingModelString);
+            }
+
+            if(existingModel != null)
+            {
+                ViewData["IsUpdate"] = isUpdate;
+                ViewData["IsSuccess"] = isSuccess;
+                ViewData["ComandaTransport"] = existingModel;
+                return View(existingModel);
+            }
+            else if (comandaTransportId.HasValue && comandaTransportId.Value != Guid.Empty)
             {
                 ViewData["ComandaTransportId"] = comandaTransportId.ToString();
 
@@ -213,6 +249,7 @@ namespace AdyralTruck.Controllers
                 model.ContractTransportId = contractTransportId;
                 model.CantitateLipsa = 40;
                 model.NumarCurse = 1;
+                model.TipTonaj = "TONA";
 
                 var comenziContract = await dataContext.ComandaTransport.Where(w => !w.Inactiv && w.ContractTransportId == model.ContractTransportId).CountAsync();
 
@@ -221,7 +258,11 @@ namespace AdyralTruck.Controllers
                 model.DataIncarcare = DateTime.Now;
                 model.DetaliiPlata = "se va face la data primirii documentelor in original";
 
-                var comandaAnterioara = await dataContext.ComandaTransport.Where(w => w.ContractTransportId == contractTransportId && w.NumarComanda == model.NumarComanda - 1).FirstOrDefaultAsync();
+                var comandaAnterioara = await dataContext.ComandaTransport
+                    .Where(w => w.ContractTransportId == contractTransportId)
+                    .OrderByDescending(o => o.DataCreare)
+                    .FirstOrDefaultAsync();
+
                 if(comandaAnterioara != null)
                 {
                     model.DetaliiSofer = comandaAnterioara.DetaliiSofer;
@@ -248,7 +289,20 @@ namespace AdyralTruck.Controllers
            
             if (!ModelState.IsValid)
             {
-                return RedirectToAction("DetaliiComandaTransport", new { @contractTransportId = model.ContractTransportId, @isUpdate = true, @isSuccess = false });
+                var serializedResult = JsonSerializer.Serialize(model, new JsonSerializerOptions()
+                {
+                    ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                    WriteIndented = true,
+                    AllowTrailingCommas = true,
+                });
+
+                return RedirectToAction("DetaliiComandaTransport",
+                    new RouteValueDictionary(new {
+                        contractTransportId = model.ContractTransportId,
+                        isUpdate = true,
+                        isSuccess = false,
+                        existingModelString = serializedResult
+                    }));
             }
 
             var item = dataContext.ComandaTransport.Include(x => x.ContractTransport).FirstOrDefault(q => q.ComandaTransportId == model.ComandaTransportId);
@@ -258,10 +312,15 @@ namespace AdyralTruck.Controllers
                 item = mapper.Map(model, item);
                 item.ContractTransport = null;
                 item.ContractTransportId = model.ContractTransportId;
+                item.DataCreare = DateTime.Now;
                 await dataContext.ComandaTransport.AddAsync(item);
                 await dataContext.SaveChangesAsync(true);
 
-                return RedirectToAction("DetaliiComandaTransport", new { @contractTransportId = model.ContractTransportId, @comandaTransportId = item.ComandaTransportId, @isSuccess = true });
+                return RedirectToAction("DetaliiComandaTransport", 
+                    new { @contractTransportId = model.ContractTransportId, 
+                        @comandaTransportId = item.ComandaTransportId,
+                        @isSuccess = true
+                    });
             }
 
             model.EmailTrimisFurnizor = item.EmailTrimisFurnizor;
@@ -504,6 +563,8 @@ namespace AdyralTruck.Controllers
 
             var model = mapper.Map<ComandaTransportViewModel>(comandaTransport);
 
+            var contractDejaTrimis = model.ContractTransport?.EmailTrimisFurnizor;
+
             var furnizor = await dataContext.Furnizori.Where(w => w.FurnizorId == furnizorId).FirstOrDefaultAsync();
 
             string comandaFileDownloadName = string.Format("Comanda Transport {0} - {1} - {2}.pdf", model.ContractTransport.Furnizor?.Nume, model.NumarContract, model.DataContract.ToString("dd/MM/yyyy"));
@@ -553,9 +614,11 @@ namespace AdyralTruck.Controllers
                 comandaFileDownloadName, 
                 base64StringContract,
                 contractFileDownloadName,
-                model.ContractTransport?.Furnizor?.Email);
+                model.ContractTransport?.Furnizor?.Email,
+                contractDejaTrimis.HasValue && contractDejaTrimis.Value);
 
             comandaTransport.EmailTrimisFurnizor = true;
+            comandaTransport.ContractTransport.EmailTrimisFurnizor = true;
             dataContext.ComandaTransport.Update(comandaTransport);
             await dataContext.SaveChangesAsync(true);
 
@@ -581,9 +644,12 @@ namespace AdyralTruck.Controllers
                 return new JsonResult(new { @success = false });
             }
 
+            bool contractTrimisDeja = false;
+
             var models = comenziTransport.Select(s => mapper.Map<ComandaTransportViewModel>(s)).ToList();
 
             var contract = models.First().ContractTransport;
+            contractTrimisDeja = contract.EmailTrimisFurnizor;
 
             var furnizor = await dataContext.Furnizori.Where(w => w.FurnizorId == contract.FurnizorId).FirstOrDefaultAsync();
 
@@ -640,10 +706,20 @@ namespace AdyralTruck.Controllers
                 comandaFileDownloadName,
                 base64StringContract,
                 contractFileDownloadName,
-                contract?.Furnizor?.Email);
+                contract?.Furnizor?.Email,
+                contractTrimisDeja);
 
             comenziTransport.ForEach(item => { item.EmailTrimisFurnizor = true; });
             dataContext.ComandaTransport.UpdateRange(comenziTransport);
+
+            var contractUpdate = await dataContext.ContracteTransport.FirstOrDefaultAsync(f => f.ContractTransportId == contract.ContractTransportId);
+
+            if(contractUpdate != null)
+            {
+                contractUpdate.EmailTrimisFurnizor = true;
+                dataContext.ContracteTransport.Update(contractUpdate);
+            }
+
             await dataContext.SaveChangesAsync(true);
 
             return new JsonResult(new { @success = true });

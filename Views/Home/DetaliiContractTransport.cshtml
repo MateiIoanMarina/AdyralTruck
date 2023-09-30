@@ -475,7 +475,8 @@
                         ids: listaComenziIds,
                     },
                     success: function () {
-                        alert('Emailul a fost trimis cu success.')
+                        alert('Emailul a fost trimis cu success.');
+                        listaComenziIds = [];
                     },
                     error: function () {
                         alert('Emailul nu a fost trimis cu success. Va rugam reincercati trimiterea acestuia.')
