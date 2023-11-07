@@ -68,7 +68,7 @@ namespace AdyralTruck.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var listaEmailuri = await dataContext.Furnizori.Select(s => s.Email).Distinct().ToListAsync();
+            var listaEmailuri = await dataContext.Furnizori.Where(w => !w.Inactiv).Select(s => s.Email).Distinct().ToListAsync();
             ViewData["listaEmailuri"] = listaEmailuri;
 
             return View();
@@ -140,17 +140,17 @@ namespace AdyralTruck.Controllers
                 return View(model);
             }
 
-            var listaEmailuri = dataContext.Furnizori.Select(s => s.Email).Distinct().ToList();
+            var listaEmailuri = dataContext.Furnizori.Where(w => !w.Inactiv).Select(s => s.Email).Distinct().ToList();
             ViewData["listaEmailuri"] = listaEmailuri;
 
-            if (listaEmailuri != null && listaEmailuri.Count > 0)
-            {
-                if (listaEmailuri.Contains(model.Email))
-                {
-                    ViewData["EmailExists"] = $"Aceasta adresa de e-mail {model.Email} este deja folosita pentru alt furnizor.";
-                    return View(model);
-                }
-            }
+            //if (listaEmailuri != null && listaEmailuri.Count > 0)
+            //{
+            //    if (listaEmailuri.Contains(model.Email))
+            //    {
+            //        ViewData["EmailExists"] = $"Aceasta adresa de e-mail {model.Email} este deja folosita pentru alt furnizor.";
+            //        return View(model);
+            //    }
+            //}
 
             var item = mapper.Map<Furnizor>(model);
             dataContext.Add(item);

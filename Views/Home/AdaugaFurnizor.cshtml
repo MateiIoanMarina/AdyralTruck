@@ -121,6 +121,8 @@
                 if(emailuriExistente && emailuriExistente.length){
                     $("#emailSpan").html(`Emailuri deja existente in sistem: `);
                     emailuriExistente.map(item => $("#emailSpan").append(`<li>${item}</li>`));
+                } else {
+                    $("#emailSpan").html('');
                 }
             }
         }
