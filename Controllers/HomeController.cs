@@ -251,7 +251,14 @@ namespace AdyralTruck.Controllers
                 model.NumarCurse = 1;
                 model.TipTonaj = "TONA";
 
-                var comenziContract = await dataContext.ComandaTransport.Where(w => !w.Inactiv && w.ContractTransportId == model.ContractTransportId).CountAsync();
+                var comenziContract = await dataContext.ComandaTransport
+                    .Where(w => !w.Inactiv && w.ContractTransportId == model.ContractTransportId).AnyAsync() ?
+                    
+                    await dataContext.ComandaTransport
+                        .Where(w => !w.Inactiv && w.ContractTransportId == model.ContractTransportId)
+                        .Select(s => s.NumarComanda)
+                        .MaxAsync() : 
+                        0;
 
                 model.NumarComanda = comenziContract + 1;
                 model.DataComanda = DateTime.Now;
