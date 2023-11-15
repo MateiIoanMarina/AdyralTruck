@@ -5,15 +5,9 @@
     Layout = "~/Views/Shared/_PdfLayout.cshtml";
 }
 
-<style>
-.textt {
-    font-size: medium;
-}
-</style>
-
 @if (Model != null && Model.ContractTransport != null && Model.ContractTransport.Furnizor != null)
 {
-    <div class="container textt">
+    <div class="container">
         <div class="card" style="width: 100%;padding: 5px;border: none;padding-bottom: 0px !important;">
             <div class="card-body">
                 <h5 class="card-title">Adyral Truck S.R.L.</h5>
@@ -59,9 +53,7 @@
         </div>
         <div class="row">
             <span style="color: red;">
-                <b>
-                    OBS: CONDUCATORUL AUTO TREBUIE SA OPREASCA TICHETELE DE LA INCARCARE - I SE VOR DA DOUA, DINTRE CARE ORIGINALUL VA AJUNGE LA SOCIETATEA NOASTRA, CAT SI TICHETUL DE LA DESCARCARE, SI CMR-UL IN ORIGINAL STAMPILAT.
-                </b>
+                OBS: Conducatorul auto trebuie sa opreasca tichetele de la incarcare - i se vor da doua, dintre care originalul va ajunge la societatea noastra, cat si tichetul de la descarcare, si CMR-ul in original stampilat.
             </span>
         </div>
         <div class="row" style="border: none;">
