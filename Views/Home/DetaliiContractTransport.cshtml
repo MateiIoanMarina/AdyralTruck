@@ -185,10 +185,7 @@
                     <div class="row">
                         <div class="col-sm"></div>
                         <div class="col-sm float-start">
-                            @if (!contractTransport.Inactiv)
-                            {
-                                <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-sm btn-success center-block" value="Salveaza" />
-                            }
+                            <input id="saveButton" type="submit" style="margin-top: 10px;" class="btn btn-sm btn-success center-block" value="Salveaza" />
                         </div>
                     </div>
                 </div>
@@ -206,7 +203,7 @@
     <div class="card-body">
         <h5 class="card-title">
             Comenzi de Transport
-            @if(contractTransport != null && contractTransport.ContractTransportId != null && contractTransport.ContractTransportId != Guid.Empty && !contractTransport.Inactiv)
+            @if(contractTransport != null && contractTransport.ContractTransportId != null && contractTransport.ContractTransportId != Guid.Empty)
             {
                 <button class="btn btn-primary btn-sm float-end" onclick="adaugaComandaTransport('@contractTransport?.ContractTransportId.ToString()')">Adauga Comanda</button>
             }

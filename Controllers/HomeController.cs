@@ -354,7 +354,7 @@ namespace AdyralTruck.Controllers
             {
                 ViewData["ContractTransportId"] = contractTransportId.Value.ToString();
 
-                var contractTransport = dataContext.ContracteTransport.Include(x => x.ComenziTransport.Where(w => !w.Inactiv).OrderByDescending(o => o.NumarComanda)).Include(x => x.Furnizor).FirstOrDefault(f => f.ContractTransportId == contractTransportId.Value && !f.Sters);
+                var contractTransport = dataContext.ContracteTransport.Include(x => x.ComenziTransport.OrderByDescending(o => o.NumarComanda)).Include(x => x.Furnizor).FirstOrDefault(f => f.ContractTransportId == contractTransportId.Value && !f.Sters);
 
                 if (contractTransport != null)
                 {
